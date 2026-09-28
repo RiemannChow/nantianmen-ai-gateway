@@ -1,0 +1,11 @@
+packages:
+  - "packages/*"
+  
+allowBuilds:
+  '@scarf/scarf': set this to true or false
+  '@tree-sitter-grammars/tree-sitter-yaml': set this to true or false
+  core-js-pure: set this to true or false
+  esbuild: set this to true or false
+  nx: set this to true or false
+  tree-sitter: set this to true or false
+  tree-sitter-json: set this to true or false

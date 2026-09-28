@@ -1,0 +1,371 @@
+system:
+  - name: workspace
+    value: 'workspace'
+    children:
+      - name: consumer
+        value: 'application'
+        children:
+          - name: view all consumer
+            value: 'view_all'
+            guest_allow: true
+          - name: manager all consumer
+            value: "manager_all"
+            dependents:
+              - system.workspace.consumer.view_all
+      - name: service
+        value: 'service'
+        children:
+          - name: view all service
+            value: 'view_all'
+            guest_allow: true
+          - name: manager all consumer
+            value: "manager_all"
+            dependents:
+              - system.workspace.service.view_all
+      - name: team
+        value: 'team'
+        children:
+          - name: view all team
+            value: 'view_all'
+            guest_allow: true
+          - name: create
+            value: 'create'
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.workspace.team.view_all
+  - name: api portal
+    value: 'api_portal'
+    children:
+      - name: api portal
+        value: 'api_portal'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+  - name: analysis
+    value: 'analysis'
+    children:
+      - name: run view
+        value: 'run_view'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+  - name: system settings
+    value: 'settings'
+    children:
+      - name: general
+        value: 'general'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+      - name: account
+        value: 'account'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.account.view
+      - name: ai balance
+        value: 'ai_balance'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.ai_balance.view
+
+      - name: role
+        value: 'role'
+        children:
+          - name: view
+            guest_allow: true
+            value: 'view'
+      - name: api gateway
+        value: 'api_gateway'
+        children:
+          - name: view
+            cname: 查看
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.api_gateway.view
+      - name: ai provider
+        value: 'ai_provider'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.ai_provider.view
+      - name: ai key resource
+        value: 'ai_key_resource'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.ai_key_resource.view
+      - name: ai api
+        value: 'ai_api'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.ai_api.view
+      - name: login
+        value: 'login'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.login.view
+      - name: ai log
+        value: 'ai_log'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.ai_log.view
+      - name: ssl certificate
+        cname: 证书
+        value: 'ssl_certificate'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.ssl_certificate.view
+      - name: data source
+        value: 'data_source'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.data_source.view
+      - name: log configuration
+        value: 'log_configuration'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.log_configuration.view
+      - name: global strategy
+        value: "strategy"
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.strategy.view
+      - name: mcp
+        value: 'mcp'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.mcp.view
+      - name: apikey
+        value: 'apikey'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.apikey.view
+team:
+  - name: service
+    value: 'service'
+    children:
+      - name: api
+        value: 'api'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+                - team.service.api.view
+      - name: api doc
+        cname: API文档
+        value: 'api_doc'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+                - team.service.api_doc.view
+      - name: service intro
+        value: 'service_intro'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+                - team.service.service_intro.view
+      - name: upstream
+        cname: 上游
+        value: 'upstream'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+                - team.service.upstream.view
+      - name: release
+        value: 'release'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - team.service.release.view
+      - name: subscription review
+        value: 'subscription'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+                - team.service.subscription.view
+      - name: service strategy
+        value: 'strategy'
+        children:
+            - name: view
+              value: 'view'
+              guest_allow: true
+            - name: manager
+              value: 'manager'
+              dependents:
+                - team.service.strategy.view
+  - name: consumer
+    value: 'consumer'
+    children:
+      - name: subscription service
+        cname: 订阅服务
+        value: 'subscription'
+        children:
+          - name: allow subscribe service
+            value: 'subscribe'
+          - name: view subscribed services
+            value: 'view_subscribed_service'
+            guest_allow: true
+          - name: manager subscribed services
+            value: 'manager_subscribed_services'
+            dependents:
+              - team.consumer.subscription.manager_subscribed_services
+      - name: mcp
+        cname: MCP
+        value: 'mcp'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+            - team.consumer.mcp.view
+      - name: authorization
+        value: 'authorization'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - team.consumer.authorization.view
+  - name: team
+    value: 'team'
+    children:
+      - name: service
+        value: 'service'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - team.team.service.view
+      - name: consumer
+        value: 'consumer'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - team.team.consumer.view
+      - name: member
+        value: 'member'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - team.team.member.view
+      - name: team settings
+        value: 'team'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            apis:
+            dependents:
+              - team.team.team.view

@@ -1,0 +1,24 @@
+package application_authorization
+
+import (
+	"context"
+	"reflect"
+
+	"github.com/RiemannChow/nantianmen-ai-gateway/service/universally"
+	"github.com/eolinker/go-common/autowire"
+)
+
+type IAuthorizationService interface {
+	universally.IServiceGet[Authorization]
+	universally.IServiceDelete
+	universally.IServiceCreate[Create]
+	universally.IServiceEdit[Edit]
+	ListByApp(ctx context.Context, appId ...string) ([]*Authorization, error)
+	CountByApp(ctx context.Context, appId ...string) (map[string]int64, error)
+}
+
+func init() {
+	autowire.Auto[IAuthorizationService](func() reflect.Value {
+		return reflect.ValueOf(new(imlAuthorizationService))
+	})
+}

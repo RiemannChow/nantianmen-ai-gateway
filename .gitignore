@@ -1,0 +1,11 @@
+*.DS_Store
+/.idea/
+/config.yml
+/build/
+/nantianmen-ai-gateway
+.gitlab-ci.yml
+/.vscode/
+.air.toml
+/tmp/
+/work
+/cmd/

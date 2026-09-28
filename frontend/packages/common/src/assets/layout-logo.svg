@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="南天门">
+  <defs>
+    <radialGradient id="aura" cx="50%" cy="48%" r="55%">
+      <stop offset="0%" stop-color="#FFF3C4" stop-opacity="0.95"/>
+      <stop offset="35%" stop-color="#FFD36B" stop-opacity="0.55"/>
+      <stop offset="70%" stop-color="#F0A93B" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#F0A93B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mist" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#BFE6FF" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#BFE6FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFF1C2"/>
+      <stop offset="45%" stop-color="#F6C64B"/>
+      <stop offset="100%" stop-color="#C8841B"/>
+    </linearGradient>
+    <linearGradient id="goldH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#C8841B"/>
+      <stop offset="50%" stop-color="#FFF1C2"/>
+      <stop offset="100%" stop-color="#C8841B"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EE5A4A"/>
+      <stop offset="100%" stop-color="#A81C14"/>
+    </linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3A4170"/>
+      <stop offset="100%" stop-color="#171B33"/>
+    </linearGradient>
+    <linearGradient id="plaque" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2A1B52"/>
+      <stop offset="100%" stop-color="#120A2E"/>
+    </linearGradient>
+    <linearGradient id="cloud" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EAF6FF" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#9FD2FF" stop-opacity="0.5"/>
+    </linearGradient>
+    <filter id="softglow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- radiant aura -->
+  <circle cx="120" cy="116" r="112" fill="url(#aura)"/>
+
+  <!-- mist / clouds behind -->
+  <ellipse cx="66" cy="202" rx="52" ry="16" fill="url(#mist)"/>
+  <ellipse cx="176" cy="204" rx="56" ry="17" fill="url(#mist)"/>
+
+  <g filter="url(#softglow)">
+    <!-- platform / base -->
+    <rect x="50" y="178" width="140" height="18" rx="5" fill="url(#stone)"/>
+    <rect x="50" y="178" width="140" height="3.5" fill="url(#goldH)"/>
+
+    <!-- pillars -->
+    <rect x="78" y="108" width="16" height="72" rx="2" fill="url(#red)"/>
+    <rect x="146" y="108" width="16" height="72" rx="2" fill="url(#red)"/>
+    <!-- pillar gold bases & caps -->
+    <rect x="73" y="170" width="26" height="10" rx="2" fill="url(#gold)"/>
+    <rect x="141" y="170" width="26" height="10" rx="2" fill="url(#gold)"/>
+    <rect x="73" y="103" width="26" height="9" rx="2" fill="url(#gold)"/>
+    <rect x="141" y="103" width="26" height="9" rx="2" fill="url(#gold)"/>
+
+    <!-- beam (额枋) -->
+    <rect x="66" y="97" width="108" height="12" rx="2" fill="url(#red)"/>
+    <rect x="66" y="97" width="108" height="3" fill="url(#goldH)"/>
+    <rect x="66" y="106" width="108" height="3" fill="url(#goldH)"/>
+
+    <!-- roof -->
+    <path d="M34,92 Q72,68 92,60 L148,60 Q168,68 206,92 Q120,110 34,92 Z" fill="url(#gold)"/>
+    <!-- roof shading line -->
+    <path d="M40,90 Q72,70 92,63 L148,63 Q168,70 200,90" fill="none" stroke="#9A6410" stroke-width="1.4" opacity="0.6"/>
+    <!-- ridge cap -->
+    <rect x="90" y="55" width="60" height="6" rx="3" fill="url(#goldH)"/>
+    <!-- ridge end ornaments (鸱吻) -->
+    <path d="M86,60 q-7,-2 -9,-12 q7,5 11,7 z" fill="url(#gold)"/>
+    <path d="M154,60 q7,-2 9,-12 q-7,5 -11,7 z" fill="url(#gold)"/>
+    <!-- finial (宝顶) -->
+    <ellipse cx="120" cy="50" rx="7" ry="9" fill="url(#gold)"/>
+    <circle cx="120" cy="39" r="4.5" fill="#FFF6D8"/>
+    <circle cx="118" cy="37" r="1.6" fill="#FFFFFF"/>
+  </g>
+
+  <!-- plaque (匾额) -->
+  <rect x="103" y="115" width="34" height="27" rx="3" fill="url(#plaque)" stroke="url(#gold)" stroke-width="2"/>
+  <text x="120" y="134" text-anchor="middle" font-family="'STKaiti','KaiTi','STSong','SimSun',serif" font-size="13" font-weight="700" fill="#FFE9A8" letter-spacing="0.5">南天门</text>
+
+  <!-- auspicious clouds (祥云) -->
+  <g fill="url(#cloud)">
+    <path transform="translate(26,150) scale(0.8)" d="M0,18 C0,8 8,4 16,8 C18,0 30,0 34,8 C44,4 52,10 50,18 C52,26 44,28 40,24 C30,30 18,28 14,22 C8,28 0,26 0,18 Z"/>
+    <path transform="translate(214,150) scale(-0.8,0.8)" d="M0,18 C0,8 8,4 16,8 C18,0 30,0 34,8 C44,4 52,10 50,18 C52,26 44,28 40,24 C30,30 18,28 14,22 C8,28 0,26 0,18 Z"/>
+  </g>
+</svg>
