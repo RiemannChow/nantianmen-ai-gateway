@@ -43,7 +43,7 @@ func (s *HashClient) Offline(ctx context.Context, resources ...*gateway.HashRele
 				return err
 			}
 		}
-		for key, _ := range r.HashMap {
+		for key := range r.HashMap {
 			err := s.client.HDel(ctx, r.HashKey, key)
 			if err != nil {
 				s.client.Rollback(ctx)
