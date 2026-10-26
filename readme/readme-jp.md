@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/96e36db5-2733-49c8-8e1e-ecbcc60a3943)
+![nantianmen-ai-gateway](img/nantianmen-ai-gateway-link.png)
 
 <p align="center">
   <a href="/README.md">English</a>

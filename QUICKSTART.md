@@ -152,7 +152,7 @@ tail -f work/logs/error.log
 → 本机 Go 版本过低。升级到 1.23.4 及以上（项目使用 1.23 toolchain）。
 
 **Q3：`go mod tidy` 拉不到依赖 / 超时**
-→ 需要外网。`go.mod` 中 `github.com/APIParkLab/APIPark` 已重命名为 `github.com/RiemannChow/nantianmen-ai-gateway`，确保网络可访问该模块路径（或本地 replace）。
+→ 需要外网。确保本机可访问 Go 模块代理（如 `proxy.golang.org` 或 `goproxy.cn`），依赖 `github.com/RiemannChow/nantianmen-ai-gateway` 通过模块代理拉取（或配置本地 `replace`）。
 
 **Q4：启动后访问 8088 没反应**
 → 确认 `config.yml` 的 `port` 与访问端口一致；确认 MySQL/Redis 连通；看 `error.log`。

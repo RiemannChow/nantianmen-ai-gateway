@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/96e36db5-2733-49c8-8e1e-ecbcc60a3943)
+![nantianmen-ai-gateway](readme/img/nantianmen-ai-gateway-link.png)
 
 <p align="center">
   <a href="/README.md">English</a>
@@ -11,10 +11,6 @@
 </p>
 
 <b>🦄 nantianmen-ai-gateway is an open-source, all-in-one AI gateway and API developer portal, helping developers and enterprises easily manage, integrate, and deploy AI services. nantianmen-ai-gateway is open-sourced under the Apache 2.0 license, which means it's free for commercial use!</b>
-
-<br>
-
-> **📌 About this project**: nantianmen-ai-gateway is derived from [APIPark](https://github.com/APIParkLab/APIPark) by Eolinker (Apache-2.0), extended with AI gateway capabilities (LLM provider management, AI API packaging, token metering, etc.). We thank the APIPark/Eolinker team for the original work. See [NOTICE](./NOTICE) for attribution details.
 
 <br>
 
@@ -198,31 +194,35 @@ curl -sSO  https://download.nantianmen-ai-gateway.com/install/quick-start.sh ;  
 
 nantianmen-ai-gateway follows a layered design:
 
+![connection architecture](readme/img/architecture.svg)
+
 ```
 HTTP (gin + eosc autowire)
-  └─ controller   # API 层：鉴权、参数校验、响应封装
-      └─ module   # 业务编排：事务、跨服务协调
-          └─ service  # 领域逻辑（仅允许访问本模块 store）
-              └─ stores  # 数据访问（MySQL/Redis，统一封装）
+  └─ controller   # API layer: auth, parameter validation, response wrapping
+      └─ module   # business orchestration: transactions, cross-service coordination
+          └─ service  # domain logic (may only access this module's store)
+              └─ stores  # data access (MySQL/Redis, uniformly wrapped)
 ```
 
 Key runtime facts worth knowing before diving in:
 
-- **依赖注入**：基于 `eolinker/go-common` 的 `autowire`，结构体字段通过
-  `autowired:""` 标签注入，没有构造函数传参。
-- **数据面代理**：请求转发与策略执行（限流 `limiting`、熔断 `fuse`、灰度 `grey`、
-  AI 格式化 `ai_formatter` 等）由 apinto 网关驱动在数据面完成，控制面（本仓库）
-  负责把策略/路由发布给数据面。
-- **LLM 流式输出**：远程模型的 SSE 流式响应由数据面代理驱动处理；本地
-  （ollama）模型拉取进度通过 `ai-provider/local` 的 executor 管道流式下发。
-- **限流能力**：通过「策略 → limiting 驱动 → apinto limiting 插件」链路实现，
-  属于企业版（`advanced_policy`）能力。
-- **敏感配置加密**：`common/crypto` 提供 AES-256-GCM 透明加密，主密钥为
-  `config.yml` 的 `secret.encryption_key`。
-- **可观测性**：独立 admin 端口（默认 `127.0.0.1:9464`）暴露
-  `/metrics`（Prometheus，含请求计数/时延/在途数 + Go 运行时指标）、
-  `/debug/pprof/*` 与 `/healthz`；地址通过 `config.yml` 的 `metrics.addr`
-  配置，设为 `off` 关闭。
+- **Dependency injection**: based on `eolinker/go-common`'s `autowire`; struct fields are
+  injected via the `autowired:""` tag — no constructor parameter passing.
+- **Data-plane proxy**: request forwarding and policy execution (rate limiting `limiting`,
+  circuit breaking `fuse`, canary `grey`, AI formatting `ai_formatter`, etc.) are driven by
+  the apinto gateway on the data plane; the control plane (this repo) publishes policies/routes
+  to the data plane.
+- **LLM streaming**: SSE streaming responses from remote models are handled by the data-plane
+  proxy; local (ollama) model pull progress is streamed via the executor pipeline in
+  `ai-provider/local`.
+- **Rate limiting**: implemented through the "policy → limiting driver → apinto limiting
+  plugin" chain; it is an enterprise (`advanced_policy`) capability.
+- **Sensitive config encryption**: `common/crypto` provides transparent AES-256-GCM encryption;
+  the master key is `config.yml`'s `secret.encryption_key`.
+- **Observability**: a dedicated admin port (default `127.0.0.1:9464`) exposes
+  `/metrics` (Prometheus: request count/latency/inflight + Go runtime metrics),
+  `/debug/pprof/*`, and `/healthz`; the address is configured via `config.yml`'s `metrics.addr`,
+  set to `off` to disable.
 
 <br>
 
@@ -242,7 +242,7 @@ Visit [nantianmen-ai-gateway Documentation](https://docs.nantianmen-ai-gateway.c
 
 # 🧑‍🤝‍🧑Friendly Links
 <a href="https://xroute.ai/">
-  <img width="1248" height="158" alt="新建 PPTX 演示文稿 (2)_03" src="https://github.com/user-attachments/assets/0ebd694c-410a-4e3f-a793-90f1140d15df" />
+  <img width="1248" height="158" alt="nantianmen-ai-gateway friendly links" src="https://github.com/user-attachments/assets/0ebd694c-410a-4e3f-a793-90f1140d15df" />
 
 </a>
 <br>
