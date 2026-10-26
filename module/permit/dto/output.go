@@ -20,9 +20,9 @@ func SearchOptions(ops []*Option, keyword string) []*Option {
 		return ops
 	}
 	rs := make([]*Option, 0, len(ops))
-	
+
 	for _, op := range ops {
-		if op.Name == keyword || strings.Index(op.Name, keyword) > -1 || op.Label == keyword || strings.Index(op.Label, keyword) > -1 {
+		if op.Name == keyword || strings.Contains(op.Name, keyword) || op.Label == keyword || strings.Contains(op.Label, keyword) {
 			rs = append(rs, op)
 		}
 	}

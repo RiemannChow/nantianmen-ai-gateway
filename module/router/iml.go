@@ -10,11 +10,8 @@ import (
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/universally/commit"
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/service"
-	"github.com/RiemannChow/nantianmen-ai-gateway/service/upstream"
 
 	"gorm.io/gorm"
-
-	"github.com/RiemannChow/nantianmen-ai-gateway/service/team"
 
 	"github.com/google/uuid"
 
@@ -39,11 +36,9 @@ var (
 )
 
 type imlRouterModule struct {
-	teamService     team.ITeamService         `autowired:""`
-	serviceService  service.IServiceService   `autowired:""`
-	apiService      api.IAPIService           `autowired:""`
-	upstreamService upstream.IUpstreamService `autowired:""`
-	transaction     store.ITransaction        `autowired:""`
+	serviceService service.IServiceService `autowired:""`
+	apiService     api.IAPIService         `autowired:""`
+	transaction    store.ITransaction      `autowired:""`
 }
 
 func (i *imlRouterModule) SimpleAPIs(ctx context.Context, input *router_dto.InputSimpleAPI) ([]*router_dto.SimpleItem, error) {
@@ -111,6 +106,9 @@ func (i *imlRouterModule) ExportAll(ctx context.Context) ([]*router_dto.Export, 
 func (i *imlRouterModule) SimpleList(ctx context.Context, serviceId string) ([]*router_dto.SimpleItem, error) {
 
 	list, err := i.apiService.ListForService(ctx, serviceId)
+	if err != nil {
+		return nil, err
+	}
 	apiInfos, err := i.apiService.ListInfo(ctx, utils.SliceToSlice(list, func(s *api.API) string {
 		return s.UUID
 	})...)

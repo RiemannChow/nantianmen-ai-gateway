@@ -19,7 +19,6 @@ import (
 
 	ai_api_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/ai-api/dto"
 	ai_api "github.com/RiemannChow/nantianmen-ai-gateway/service/ai-api"
-	"github.com/RiemannChow/nantianmen-ai-gateway/service/api"
 	api_doc "github.com/RiemannChow/nantianmen-ai-gateway/service/api-doc"
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/service"
 	"github.com/eolinker/go-common/auto"
@@ -42,7 +41,6 @@ type imlAPIModule struct {
 	apiDocService          api_doc.IAPIDocService            `autowired:""`
 	aiAPIService           ai_api.IAPIService                `autowired:""`
 	aiModelService         ai_model.IProviderModelService    `autowired:""`
-	apiService             api.IAPIService                   `autowired:""`
 	transaction            store.ITransaction                `autowired:""`
 }
 

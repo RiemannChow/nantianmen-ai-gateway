@@ -2,9 +2,9 @@ package subscribe
 
 import (
 	"fmt"
-	
+
 	"github.com/gin-gonic/gin"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/subscribe"
 	subscribe_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/subscribe/dto"
 )

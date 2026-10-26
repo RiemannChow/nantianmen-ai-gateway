@@ -24,8 +24,6 @@ import (
 
 	api_doc "github.com/RiemannChow/nantianmen-ai-gateway/service/api-doc"
 
-	application_authorization "github.com/RiemannChow/nantianmen-ai-gateway/service/application-authorization"
-
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/service"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -38,12 +36,10 @@ var (
 )
 
 type imlMcpModule struct {
-	serviceService          service.IServiceService                         `autowired:""`
-	appService              service.IServiceService                         `autowired:""`
-	appAuthorizationService application_authorization.IAuthorizationService `autowired:""`
-	apiDocService           api_doc.IAPIDocService                          `autowired:""`
-	subscriberService       subscribe.ISubscribeService                     `autowired:""`
-	releaseService          release.IReleaseService                         `autowired:""`
+	serviceService    service.IServiceService     `autowired:""`
+	apiDocService     api_doc.IAPIDocService      `autowired:""`
+	subscriberService subscribe.ISubscribeService `autowired:""`
+	releaseService    release.IReleaseService     `autowired:""`
 }
 
 func (i *imlMcpModule) subscribeServiceIds(ctx context.Context, appId string) ([]string, error) {

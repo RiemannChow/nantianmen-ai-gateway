@@ -7,10 +7,6 @@ import (
 	"github.com/eolinker/go-common/autowire"
 )
 
-const (
-	accessGroup = "team"
-)
-
 type ITeamPermitModule interface {
 	Permissions(ctx context.Context, teamId string) ([]string, error)
 }

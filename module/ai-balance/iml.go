@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/setting"
 
@@ -30,6 +31,10 @@ import (
 
 	ai_balance_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/ai-balance/dto"
 	"github.com/eolinker/eosc/log"
+
+	"github.com/eolinker/go-common/register"
+	"github.com/eolinker/go-common/server"
+	"github.com/eolinker/go-common/utils"
 )
 
 var _ IBalanceModule = (*imlBalanceModule)(nil)
@@ -41,6 +46,7 @@ type imlBalanceModule struct {
 	balanceService ai_balance.IBalanceService `autowired:""`
 	settingService setting.ISettingService    `autowired:""`
 	transaction    store.ITransaction         `autowired:""`
+	probeCancel    context.CancelFunc
 }
 
 func (i *imlBalanceModule) SyncLocalBalances(ctx context.Context, address string) error {
@@ -154,6 +160,10 @@ func (i *imlBalanceModule) Sort(ctx context.Context, input *ai_balance_dto.Sort)
 	}
 	releases := make([]*gateway.DynamicRelease, 0, len(list))
 	for _, item := range list {
+		if item.State != 1 {
+			// abnormal models are excluded from the fan-out
+			continue
+		}
 		base := v
 		if item.Provider != ai_provider_local.ProviderLocal {
 			p, has := model_runtime.GetProvider(item.Provider)
@@ -201,11 +211,14 @@ func (i *imlBalanceModule) List(ctx context.Context, keyword string) ([]*ai_bala
 				Id:   item.Model,
 				Name: item.ModelName,
 			},
-			Priority: priority,
-			Type:     ai_balance_dto.ModelTypeFromInt(item.Type),
-			State:    ai_balance_dto.ModelStateFromInt(item.State),
-			APICount: aiAPIMap[item.Model],
-			KeyCount: keyMap[item.Provider],
+			Priority:      priority,
+			Type:          ai_balance_dto.ModelTypeFromInt(item.Type),
+			State:         ai_balance_dto.ModelStateFromInt(item.State),
+			APICount:      aiAPIMap[item.Model],
+			KeyCount:      keyMap[item.Provider],
+			LastCheckAt:   item.LastCheckAt,
+			LastSuccessAt: item.LastSuccessAt,
+			FailCount:     item.FailCount,
 		})
 	}
 	return result, nil
@@ -275,6 +288,10 @@ func (i *imlBalanceModule) getLocalBalances(ctx context.Context, v string) ([]*g
 
 	releases := make([]*gateway.DynamicRelease, 0, len(balances))
 	for _, item := range balances {
+		if item.State != 1 {
+			// abnormal models are excluded from the fan-out
+			continue
+		}
 		base := v
 		if item.Provider != ai_provider_local.ProviderLocal {
 			p, has := model_runtime.GetProvider(item.Provider)
@@ -300,6 +317,10 @@ func (i *imlBalanceModule) getBalances(ctx context.Context) ([]*gateway.DynamicR
 	}
 	releases := make([]*gateway.DynamicRelease, 0, len(balances))
 	for _, item := range balances {
+		if item.State != 1 {
+			// abnormal models are excluded from the fan-out
+			continue
+		}
 		base := v
 		if item.Provider != ai_provider_local.ProviderLocal {
 			p, has := model_runtime.GetProvider(item.Provider)
@@ -333,4 +354,90 @@ func (i *imlBalanceModule) initGateway(ctx context.Context, clusterId string, cl
 		}
 	}
 	return nil
+}
+
+// OnInit starts the periodic health-probe loop once the server is ready.
+func (i *imlBalanceModule) OnInit() {
+	register.Handle(func(v server.Server) {
+		ctx, cancel := context.WithCancel(context.Background())
+		ctx = utils.SetUserId(ctx, "admin")
+		i.probeCancel = cancel
+		i.startHealthProbe(ctx)
+	})
+}
+
+// baseURL resolves the probe target for a balance entry: the ollama address for
+// local models, or the provider base URL for online models. Empty string means
+// the target cannot be resolved (skip probing).
+func (i *imlBalanceModule) baseURL(ctx context.Context, item *ai_balance.Balance) string {
+	if item.Provider == ai_provider_local.ProviderLocal {
+		v, has := i.settingService.Get(ctx, "system.ai_model.ollama_address")
+		if !has {
+			return ""
+		}
+		return v
+	}
+	p, has := model_runtime.GetProvider(item.Provider)
+	if !has {
+		return ""
+	}
+	return fmt.Sprintf("%s://%s%s", p.URI().Scheme(), p.URI().Host(), p.URI().Path())
+}
+
+// ProbeModel probes a single model and persists its health, flipping its gateway
+// online/offline state on change.
+func (i *imlBalanceModule) ProbeModel(ctx context.Context, id string) error {
+	item, err := i.balanceService.Get(ctx, id)
+	if err != nil {
+		return err
+	}
+	healthy := i.probeOne(ctx, item)
+	i.applyHealth(ctx, item, healthy)
+	return nil
+}
+
+// BatchProbe probes every model regardless of the auto-failover setting (manual
+// trigger from the UI).
+func (i *imlBalanceModule) BatchProbe(ctx context.Context) error {
+	i.probeAll(ctx)
+	return nil
+}
+
+// UpdateState manually overrides a model's health state and re-syncs the gateway.
+func (i *imlBalanceModule) UpdateState(ctx context.Context, id string, state int) error {
+	item, err := i.balanceService.Get(ctx, id)
+	if err != nil {
+		return err
+	}
+	if item.State == state {
+		return nil
+	}
+	now := time.Now().Unix()
+	err = i.balanceService.UpdateHealth(ctx, id, state, now, item.LastSuccessAt, int64(item.FailCount))
+	if err != nil {
+		return err
+	}
+	base := i.baseURL(ctx, item)
+	if base != "" {
+		return i.syncGateway(ctx, cluster.DefaultClusterID, []*gateway.DynamicRelease{newRelease(item, base)}, state == 1)
+	}
+	return nil
+}
+
+// GetAutoFailover reports whether the scheduled automatic failover is enabled.
+func (i *imlBalanceModule) GetAutoFailover(ctx context.Context) (bool, error) {
+	v, has := i.settingService.Get(ctx, autoFailoverKey)
+	if !has {
+		return false, nil
+	}
+	return v == "true", nil
+}
+
+// SetAutoFailover enables or disables the scheduled automatic failover.
+func (i *imlBalanceModule) SetAutoFailover(ctx context.Context, enabled bool) error {
+	v := "false"
+	if enabled {
+		v = "true"
+	}
+	return i.settingService.Set(ctx, autoFailoverKey, v, "admin")
 }

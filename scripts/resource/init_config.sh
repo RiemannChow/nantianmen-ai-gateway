@@ -93,6 +93,13 @@ request_apinto() {
 }
 
 login_nantianmen_ai_gateway() {
+  # 安全要求：必须显式提供管理员初始密码，禁止使用空/默认值初始化。
+  if [[ "$ADMIN_PASSWORD" == "" ]]; then
+    echo_fail "ADMIN_PASSWORD is not set."
+    echo_fail "Refusing to initialize the admin account without an explicit password."
+    echo_fail "Set it via environment, e.g. docker run -e ADMIN_PASSWORD='<strong-password>' ..."
+    exit 1
+  fi
   # 执行登录请求并捕获响应头
   body='{"name":"admin","password":"'"${ADMIN_PASSWORD}"'"}'
   response=$(request_nantianmen_ai_gateway "/api/v1/account/login/username" "$body")

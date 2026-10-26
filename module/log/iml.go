@@ -275,7 +275,8 @@ func (i *imlLogModule) scheduleUpdateLogRecord(ctx context.Context) {
 	before90Days := now.Add(-7 * 24 * time.Hour)
 	beginTime := before90Days
 	if info.LastPullTime.After(before90Days) {
-		before90Days = info.LastPullTime
+		// 上次拉取时间比 7 天前更近时，从上次拉取位置继续，避免重复拉取
+		beginTime = info.LastPullTime
 	}
 	pauseTime := now
 	historyFinish := false

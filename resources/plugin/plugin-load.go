@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"log"
 	"strings"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/model/plugin_model"
 	pluginModule "github.com/RiemannChow/nantianmen-ai-gateway/module/plugin-cluster"
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/setting"
@@ -38,7 +38,7 @@ type pluginLoad struct {
 }
 
 func (p *pluginLoad) OnInit() {
-	
+
 	p.transaction.Transaction(context.Background(), func(ctx context.Context) error {
 		value, has := p.settingService.Get(ctx, pluginVersionName)
 		if has {
@@ -52,16 +52,16 @@ func (p *pluginLoad) OnInit() {
 		}
 		return p.settingService.Set(ctx, pluginVersionName, p.version, "system")
 	})
-	
+
 	p.defines = nil
 	p.version = ""
 }
 
 func (p *pluginLoad) UnmarshalYAML(value *yaml.Node) error {
-	
+
 	sorts := make([]string, 0)
 	var itemNodes []*yaml.Node
-	
+
 	for i := 0; i < len(value.Content); i += 2 {
 		v := value.Content[i]
 		switch strings.ToLower(v.Value) {
@@ -76,9 +76,9 @@ func (p *pluginLoad) UnmarshalYAML(value *yaml.Node) error {
 			continue
 		case "plugin":
 			itemNodes = value.Content[i+1].Content
-			
+
 		}
-		
+
 	}
 	items, err := pluginItemUnmarshalYAML(sorts, itemNodes)
 	if err != nil {
@@ -101,14 +101,14 @@ func pluginItemUnmarshalYAML(sorts []string, nodes []*yaml.Node) ([]*plugin_mode
 		k := nodes[i].Value
 		v := nodes[i+1]
 		it := new(defineT)
-		
+
 		err := v.Decode(&it)
 		if err != nil {
 			log.Printf("yaml: error decoding %s: %v", v.Value, err)
 			return nil, err
 		}
 		Items = append(Items, &defineItem{
-			
+
 			Define: &plugin_model.Define{
 				Extend: it.Id,
 				Name:   k,
@@ -121,12 +121,12 @@ func pluginItemUnmarshalYAML(sorts []string, nodes []*yaml.Node) ([]*plugin_mode
 			sort: i + sortBase,
 		})
 	}
-	
+
 	sortValues := make(map[string]int, len(sorts))
 	for i, v := range sorts {
 		sortValues[v] = i
 	}
-	
+
 	for _, v := range Items {
 		if s, has := sortValues[v.Name]; has {
 			v.sort = s
@@ -146,9 +146,9 @@ func pluginItemUnmarshalYAML(sorts []string, nodes []*yaml.Node) ([]*plugin_mode
 		}
 		v.Render = renderObj.Render
 	}
-	
+
 	utils.Sort(Items, func(i, j *defineItem) bool {
-		
+
 		return i.sort < j.sort
 	})
 	for i, v := range Items {
@@ -160,13 +160,12 @@ func pluginItemUnmarshalYAML(sorts []string, nodes []*yaml.Node) ([]*plugin_mode
 }
 func init() {
 	loader := new(pluginLoad)
-	
+
 	err := yaml.Unmarshal(embeddedPlugin, loader)
 	// 释放内存
 	embeddedPlugin = nil
 	if err != nil {
 		panic(fmt.Errorf("unmarshal plugin inner:%w", err))
-		return
 	}
 	autowire.Autowired(loader)
 }

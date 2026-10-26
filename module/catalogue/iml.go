@@ -40,10 +40,7 @@ import (
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/release"
 
-	"github.com/RiemannChow/nantianmen-ai-gateway/service/api"
 	"github.com/eolinker/go-common/auto"
-
-	"github.com/RiemannChow/nantianmen-ai-gateway/service/tag"
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/service"
 
@@ -61,13 +58,11 @@ var (
 
 type imlCatalogueModule struct {
 	catalogueService       catalogue.ICatalogueService       `autowired:""`
-	apiService             api.IAPIService                   `autowired:""`
 	apiDocService          api_doc.IAPIDocService            `autowired:""`
 	serviceService         service.IServiceService           `autowired:""`
 	serviceOverviewService service_overview.IOverviewService `autowired:""`
 	serviceTagService      service_tag.ITagService           `autowired:""`
 	serviceDocService      service_doc.IDocService           `autowired:""`
-	tagService             tag.ITagService                   `autowired:""`
 	releaseService         release.IReleaseService           `autowired:""`
 	subscribeService       subscribe.ISubscribeService       `autowired:""`
 	subscribeApplyService  subscribe.ISubscribeApplyService  `autowired:""`
@@ -313,6 +308,9 @@ func (i *imlCatalogueModule) Subscribe(ctx context.Context, subscribeInfo *catal
 					err = i.subscribeService.Save(ctx, v.Id, &subscribe.UpdateSubscribe{
 						ApplyStatus: &status,
 					})
+					if err != nil {
+						return err
+					}
 				}
 
 			}

@@ -1,0 +1,79 @@
+name: ci
+
+on:
+  push:
+    branches: [main, main-github-pro]
+  pull_request:
+    branches: [main, main-github-pro]
+
+jobs:
+  backend-test:
+    name: backend test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.6'
+      - name: Go vet
+        run: go vet ./...
+      - name: Go test
+        run: go test ./...
+
+  backend-lint:
+    name: backend lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.6'
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+
+  security-scan:
+    name: security scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.6'
+      - name: Govulncheck (dependency CVEs)
+        # 阻断门禁：Go 标准库/依赖存在已知漏洞时 CI 失败
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+      - name: Gosec (report mode)
+        # 暂不阻断：存量告警清理后移除 -no-fail
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          gosec -quiet -no-fail -fmt=text ./... || true
+
+  frontend-test:
+    name: frontend test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.12'
+      - name: Pnpm install, lint, test, build
+        run: |
+          npm install -g pnpm
+          cd frontend
+          pnpm install --registry https://registry.npmmirror.com
+          pnpm run lint
+          pnpm test -- --ci
+          ./node_modules/.bin/lerna run build --scope=core
+      - name: Pnpm audit (report mode)
+        # 暂不阻断：存量告警清理后改为硬门禁
+        run: |
+          cd frontend
+          pnpm audit --audit-level=high || echo "::warning::pnpm audit reported vulnerabilities (see job log)"

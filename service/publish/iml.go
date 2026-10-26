@@ -6,7 +6,7 @@ import (
 	"errors"
 	"strings"
 	"time"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/service_diff"
 	"github.com/RiemannChow/nantianmen-ai-gateway/stores/publish"
 	"github.com/eolinker/go-common/utils"
@@ -39,7 +39,7 @@ func (s *imlPublishService) GetPublishStatus(ctx context.Context, id string) ([]
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return utils.SliceToSlice(list, func(s *publish.Status) *Status {
 		return &Status{
 			Publish:  s.Publish,
@@ -75,7 +75,7 @@ func (s *imlPublishService) Refuse(ctx context.Context, service, id string, comm
 
 func (s *imlPublishService) Accept(ctx context.Context, service, id string, comments string) error {
 	return s.setAction(ctx, service, id, StatusAccept, comments)
-	
+
 }
 
 func (s *imlPublishService) SetLatest(ctx context.Context, release string, id string) error {
@@ -133,9 +133,9 @@ func (s *imlPublishService) Latest(ctx context.Context, release ...string) ([]*P
 			return nil, err
 		}
 	}
-	
+
 	return utils.SliceToSlice(flows, FromEntity), nil
-	
+
 }
 
 func (s *imlPublishService) GetLatest(ctx context.Context, id string) (*Publish, error) {
@@ -187,7 +187,7 @@ func (s *imlPublishService) ListProjectPage(ctx context.Context, service string,
 }
 
 func (s *imlPublishService) ListForStatus(ctx context.Context, service string, status ...StatusType) ([]*Publish, error) {
-	
+
 	wheres := make([]string, 0, 2)
 	args := make([]interface{}, 0, 2)
 	if service != "" {
@@ -204,7 +204,7 @@ func (s *imlPublishService) ListForStatus(ctx context.Context, service string, s
 	if len(wheres) == 0 {
 		return nil, errors.New("required status")
 	}
-	
+
 	flows, err := s.store.ListQuery(ctx, strings.Join(wheres, " and "), args, "id asc")
 	if err != nil {
 		return nil, err
@@ -212,7 +212,7 @@ func (s *imlPublishService) ListForStatus(ctx context.Context, service string, s
 	return utils.SliceToSlice(flows, FromEntity), nil
 }
 func (s *imlPublishService) ListForStatusPage(ctx context.Context, page int, pageSize int, status ...StatusType) ([]*Publish, int64, error) {
-	
+
 	if len(status) == 0 {
 		return nil, 0, errors.New("required status")
 	}
@@ -256,7 +256,7 @@ func (s *imlPublishService) Create(ctx context.Context, uuid, service, release, 
 		if err != nil {
 			return err
 		}
-		
+
 		// diff
 		err = s.diffStore.Insert(ctx, &publish.Diff{
 			Id:   nv.Id,

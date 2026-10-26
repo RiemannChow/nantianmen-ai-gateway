@@ -3,7 +3,7 @@ package dynamic_module
 import (
 	"context"
 	"reflect"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/universally"
 	"github.com/eolinker/go-common/autowire"
 )

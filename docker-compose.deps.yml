@@ -1,0 +1,51 @@
+# nantianmen-ai-gateway 本地依赖栈（仿 helemei 模式：一个应用包住 mysql + redis 两个镜像）
+#
+# 用法：
+#   docker compose -p nantianmen -f docker-compose.deps.yml up -d   # 启动
+#   docker compose -p nantianmen -f docker-compose.deps.yml down    # 停止（数据保留在命名卷中）
+#
+# 端口说明：
+#   - MySQL 映射 13307 而非默认 13306：13306 已被本机其他项目容器占用
+#   - config.yml 中 mysql.port / redis.addr 需与本文件保持一致
+# 凭据与 config.yml 保持一致（本地开发默认值，生产请修改）。
+#
+# 卷名说明：compose 会把卷命名为 `<项目名>_<卷名>`，即实际数据卷为
+#   nantianmen_nantianmen-mysql-data / nantianmen_nantianmen-redis-data
+# （`-p nantianmen` 指定项目名）。备份/迁移数据时请以 `docker volume ls` 为准。
+
+services:
+  nantianmen-mysql:
+    image: mysql:8.0.37
+    container_name: nantianmen-mysql
+    restart: always
+    ports:
+      - "13307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "nantianmen-ai-gateway"
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - nantianmen-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p123456"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  nantianmen-redis:
+    image: redis:7.2-alpine
+    container_name: nantianmen-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    # 与 config.yml 的 redis.password 保持一致
+    command: ["redis-server", "--requirepass", "123456"]
+    volumes:
+      - nantianmen-redis-data:/data
+
+volumes:
+  nantianmen-mysql-data:
+  nantianmen-redis-data:

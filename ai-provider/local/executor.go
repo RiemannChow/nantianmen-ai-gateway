@@ -84,7 +84,6 @@ func (m *modelPipeline) Close() {
 	for _, id := range ids {
 		m.ClosePipeline(id)
 	}
-	return
 }
 
 func (m *modelPipeline) ClosePipeline(id string) {

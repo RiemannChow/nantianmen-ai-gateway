@@ -30,6 +30,9 @@ type IClusterService interface {
 	Create(ctx context.Context, name string, resume string, address string) (*Cluster, error)
 	UpdateInfo(ctx context.Context, id string, name *string, resume *string) (*Cluster, error)
 	UpdateAddress(ctx context.Context, id string, address string) ([]*Node, error)
+	// UpdateDR updates disaster-recovery attributes (role/priority/enabled/healthy).
+	// Any nil pointer is left unchanged.
+	UpdateDR(ctx context.Context, id string, role *string, priority *int, enabled *bool, healthy *int) (*Cluster, error)
 	Nodes(ctx context.Context, clusterIds ...string) ([]*Node, error)
 	GatewayClient(ctx context.Context, id string) (gateway.IClientDriver, error)
 	Get(ctx context.Context, id string) (*Cluster, error)
@@ -160,6 +163,10 @@ func (s *imlClusterService) Create(ctx context.Context, name string, resume stri
 		Name:     name,
 		Resume:   resume,
 		Cluster:  apintoInfo.Cluster,
+		Role:     "standalone",
+		Priority: 100,
+		Enabled:  true,
+		Healthy:  1,
 		Creator:  operator,
 		Updater:  operator,
 		CreateAt: time.Now(),
@@ -350,6 +357,41 @@ func (s *imlClusterService) UpdateAddress(ctx context.Context, id string, addres
 	}
 	return s.Nodes(ctx, id)
 
+}
+
+func (s *imlClusterService) UpdateDR(ctx context.Context, id string, role *string, priority *int, enabled *bool, healthy *int) (*Cluster, error) {
+	operator := utils.UserId(ctx)
+	var c *Cluster
+	err := s.store.Transaction(ctx, func(ctx context.Context) error {
+		v, err := s.store.FirstQuery(ctx, "`uuid` = ?", []interface{}{id}, "id desc")
+		if err != nil {
+			return err
+		}
+		if role != nil {
+			v.Role = *role
+		}
+		if priority != nil {
+			v.Priority = *priority
+		}
+		if enabled != nil {
+			v.Enabled = *enabled
+		}
+		if healthy != nil {
+			v.Healthy = *healthy
+		}
+		v.Updater = operator
+		v.UpdateAt = time.Now()
+		_, err = s.store.Update(ctx, v)
+		if err != nil {
+			return err
+		}
+		c = FromEntity(v)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
 func (s *imlClusterService) Nodes(ctx context.Context, clusterIds ...string) ([]*Node, error) {

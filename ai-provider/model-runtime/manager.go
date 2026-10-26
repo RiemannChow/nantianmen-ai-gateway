@@ -29,13 +29,6 @@ func (m *Manager) Del(name string) {
 }
 
 func (m *Manager) List() []IProvider {
-	//list := m.providers.List()
-	//sort.Slice(list, func(i, j int) bool {
-	//	if list[i].Sort() == list[j].Sort() {
-	//		return list[i].ID() < list[j].ID()
-	//	}
-	//	return list[i].Sort() < list[j].Sort()
-	//})
 	return m.providers.List()
 }
 

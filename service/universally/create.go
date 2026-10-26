@@ -41,18 +41,14 @@ func (p *imlServiceCreate[INPUT, E]) Create(ctx context.Context, input *INPUT, a
 	uniquest := p.uniquestHandler(input)
 
 	err := p.store.Transaction(ctx, func(ctx context.Context) error {
-		if uniquest != nil {
-			// check
-
-			for _, v := range uniquest {
-
-				o, err := p.store.First(ctx, v)
-				if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-					return err
-				}
-				if o != nil {
-					return fmt.Errorf("%s %v already exists", p.name, v)
-				}
+		// check
+		for _, v := range uniquest {
+			o, err := p.store.First(ctx, v)
+			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+				return err
+			}
+			if o != nil {
+				return fmt.Errorf("%s %v already exists", p.name, v)
 			}
 		}
 

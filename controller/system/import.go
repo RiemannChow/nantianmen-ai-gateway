@@ -57,7 +57,6 @@ type imlImportConfigController struct {
 	applicationAuthorizationModule application_authorization.IAuthorizationModule `autowired:""`
 	catalogueModule                catalogue.ICatalogueModule                     `autowired:""`
 	subscribeModule                subscribe.ISubscribeModule                     `autowired:""`
-	applyModule                    subscribe.ISubscribeApprovalModule             `autowired:""`
 	publishModule                  publish.IPublishModule                         `autowired:""`
 	releaseModule                  release.IReleaseModule                         `autowired:""`
 	transaction                    store.ITransaction                             `autowired:""`

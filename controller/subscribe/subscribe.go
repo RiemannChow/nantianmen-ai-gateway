@@ -2,11 +2,11 @@ package subscribe
 
 import (
 	"reflect"
-	
+
 	"github.com/gin-gonic/gin"
-	
+
 	subscribe_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/subscribe/dto"
-	
+
 	"github.com/eolinker/go-common/autowire"
 )
 

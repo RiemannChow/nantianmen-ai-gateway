@@ -13,6 +13,10 @@ type IBalanceController interface {
 	Sort(ctx *gin.Context, input *ai_balance_dto.Sort) error
 	Create(ctx *gin.Context, input *ai_balance_dto.Create) error
 	Delete(ctx *gin.Context, id string) error
+	Probe(ctx *gin.Context, id string) error
+	BatchProbe(ctx *gin.Context) error
+	GetAutoFailover(ctx *gin.Context) (bool, error)
+	SetAutoFailover(ctx *gin.Context, enabled bool) error
 }
 
 func init() {

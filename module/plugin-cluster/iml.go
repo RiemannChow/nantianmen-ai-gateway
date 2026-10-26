@@ -3,9 +3,9 @@ package plugin_cluster
 import (
 	"context"
 	"fmt"
-	
+
 	plugin_cluster "github.com/RiemannChow/nantianmen-ai-gateway/service/plugin-cluster"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/gateway"
 	"github.com/RiemannChow/nantianmen-ai-gateway/model/plugin_model"
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/plugin-cluster/dto"
@@ -33,12 +33,12 @@ func (m *imlPluginClusterModule) UpdateDefine(ctx context.Context, defines []*pl
 	return m.initAllCluster(ctx)
 }
 func (m *imlPluginClusterModule) initAllCluster(ctx context.Context) error {
-	
+
 	clusters, err := m.clusterService.List(ctx)
 	if err != nil {
 		return err
 	}
-	
+
 	for _, c := range clusters {
 		err := m.initCluster(ctx, c.Uuid)
 		if err != nil {
@@ -53,7 +53,7 @@ func (m *imlPluginClusterModule) initGateway(ctx context.Context, clusterId stri
 		return err
 	}
 	pluginConfigs := utils.SliceToSlice(configForPartitions, func(s *plugin_cluster.ConfigPartition) *gateway.PluginConfig {
-		
+
 		return &gateway.PluginConfig{
 			Id:     s.Extend,
 			Name:   s.Plugin,
@@ -61,7 +61,7 @@ func (m *imlPluginClusterModule) initGateway(ctx context.Context, clusterId stri
 			Status: s.Status.String(),
 		}
 	})
-	
+
 	return clientDriver.PluginSetting().Set(ctx, pluginConfigs)
 }
 func (m *imlPluginClusterModule) GetDefine(ctx context.Context, name string) (*dto.Define, error) {
@@ -84,7 +84,7 @@ func (m *imlPluginClusterModule) Options(ctx context.Context) ([]*dto.PluginOpti
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return utils.SliceToSlice(defines, func(s *plugin_cluster.PluginDefine) *dto.PluginOption {
 		return &dto.PluginOption{
 			Name:    s.Name,
@@ -97,14 +97,14 @@ func (m *imlPluginClusterModule) Options(ctx context.Context) ([]*dto.PluginOpti
 }
 
 func (m *imlPluginClusterModule) List(ctx context.Context, clusterId string) ([]*dto.Item, error) {
-	
+
 	configPartitions, err := m.service.ListCluster(ctx, clusterId, plugin_model.OpenKind)
 	if err != nil {
 		return nil, err
 	}
 	return utils.SliceToSlice(configPartitions, func(s *plugin_cluster.ConfigPartition) *dto.Item {
 		return &dto.Item{
-			
+
 			Name:     s.Plugin,
 			Cname:    s.Cname,
 			Desc:     s.Desc,
@@ -146,16 +146,16 @@ func (m *imlPluginClusterModule) Get(ctx context.Context, clusterId string, name
 		out.Update = (*auto.TimeLabel)(cf.Update)
 	}
 	return out, define.Render, nil
-	
+
 }
 
 func (m *imlPluginClusterModule) Set(ctx context.Context, clusterId string, name string, config *dto.PluginSetting) error {
-	
+
 	err := m.service.SetCluster(ctx, clusterId, name, config.Status, config.Config)
 	if err != nil {
 		return err
 	}
-	
+
 	return m.initCluster(ctx, clusterId)
 }
 

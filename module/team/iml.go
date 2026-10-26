@@ -4,13 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/RiemannChow/nantianmen-ai-gateway/module/audit"
 	"github.com/eolinker/go-common/utils"
 
 	"github.com/eolinker/ap-account/service/role"
 
 	"github.com/eolinker/go-common/store"
-
-	"github.com/eolinker/ap-account/service/user"
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/service"
 	team_member "github.com/RiemannChow/nantianmen-ai-gateway/service/team-member"
@@ -29,7 +28,6 @@ var (
 type imlTeamModule struct {
 	service           team.ITeamService              `autowired:""`
 	memberService     team_member.ITeamMemberService `autowired:""`
-	userService       user.IUserService              `autowired:""`
 	serviceService    service.IServiceService        `autowired:""`
 	roleService       role.IRoleService              `autowired:""`
 	roleMemberService role.IRoleMemberService        `autowired:""`
@@ -125,6 +123,12 @@ func (m *imlTeamModule) Create(ctx context.Context, input *team_dto.CreateTeam) 
 	if err != nil {
 		return nil, err
 	}
+	audit.Log(ctx, &audit.AddInput{
+		ResourceType: "team",
+		ResourceID:   input.Id,
+		Action:       audit.ActionCreate,
+		Detail:       "创建团队(" + input.Name + ")",
+	})
 	return m.GetTeam(ctx, input.Id)
 }
 
@@ -139,6 +143,12 @@ func (m *imlTeamModule) Edit(ctx context.Context, id string, input *team_dto.Edi
 	if err != nil {
 		return nil, err
 	}
+	audit.Log(ctx, &audit.AddInput{
+		ResourceType: "team",
+		ResourceID:   id,
+		Action:       audit.ActionUpdate,
+		Detail:       "更新团队(" + id + ")",
+	})
 	return m.GetTeam(ctx, id)
 }
 
@@ -160,5 +170,13 @@ func (m *imlTeamModule) Delete(ctx context.Context, id string) error {
 		}
 		return nil
 	})
+	if err == nil {
+		audit.Log(ctx, &audit.AddInput{
+			ResourceType: "team",
+			ResourceID:   id,
+			Action:       audit.ActionDelete,
+			Detail:       "删除团队(" + id + ")",
+		})
+	}
 	return err
 }

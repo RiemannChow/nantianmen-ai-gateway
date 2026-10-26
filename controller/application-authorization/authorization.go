@@ -2,11 +2,11 @@ package application_authorization
 
 import (
 	"reflect"
-	
+
 	"github.com/gin-gonic/gin"
-	
+
 	"github.com/eolinker/go-common/autowire"
-	
+
 	application_authorization_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/application-authorization/dto"
 )
 

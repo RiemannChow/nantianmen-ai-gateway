@@ -18,6 +18,7 @@ type IBalanceService interface {
 	SortBefore(ctx context.Context, originID string, targetID string) ([]*Balance, error)
 	SortAfter(ctx context.Context, originID string, targetID string) ([]*Balance, error)
 	Exist(ctx context.Context, provider string, model string) (bool, error)
+	UpdateHealth(ctx context.Context, id string, state int, lastCheckAt int64, lastSuccessAt int64, failCount int64) error
 }
 
 func init() {

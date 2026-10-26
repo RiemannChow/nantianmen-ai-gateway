@@ -3,7 +3,6 @@ package catalogue
 import (
 	"context"
 	"reflect"
-	"time"
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/system"
 
@@ -47,10 +46,4 @@ func init() {
 	autowire.Auto[IExportCatalogueModule](func() reflect.Value {
 		return reflect.ValueOf(catalogueModule)
 	})
-}
-
-func formatTimeByMinute(org int64) time.Time {
-	t := time.Unix(org, 0)
-	location, _ := time.LoadLocation("Asia/Shanghai")
-	return time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, location)
 }

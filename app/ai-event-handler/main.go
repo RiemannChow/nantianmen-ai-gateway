@@ -18,7 +18,6 @@ import (
 )
 
 var (
-	version  string
 	confPath string
 )
 

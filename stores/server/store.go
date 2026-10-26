@@ -36,16 +36,16 @@ func init() {
 	autowire.Auto[IServerStore](func() reflect.Value {
 		return reflect.ValueOf(new(imlServerStore))
 	})
-	
+
 	autowire.Auto[IServerApiStore](func() reflect.Value {
 		return reflect.ValueOf(new(storeServerApi))
 	})
-	
+
 	autowire.Auto[IServerCommit](func() reflect.Value {
 		return reflect.ValueOf(commit.NewCommitWithKey[ServerCommit]("server", "setting"))
 	})
 	autowire.Auto[IServicePartitionStore](func() reflect.Value {
 		return reflect.ValueOf(new(storeServerPartition))
 	})
-	
+
 }

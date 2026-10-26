@@ -56,7 +56,6 @@ func printAccesses(group string, builder *strings.Builder) {
 			}
 		}
 	}
-	return
 }
 
 func TestPrintName(t *testing.T) {

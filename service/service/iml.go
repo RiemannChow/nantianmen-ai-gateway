@@ -129,7 +129,7 @@ func (i *imlServiceService) Check(ctx context.Context, id string, rule map[strin
 	if err != nil {
 		return nil, err
 	}
-	if rule == nil || len(rule) == 0 {
+	if len(rule) == 0 {
 		return pro, nil
 	}
 	if rule["as_server"] && !pro.AsServer {

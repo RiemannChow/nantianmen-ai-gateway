@@ -27,7 +27,6 @@ func genUpdateFields(info *service.Overview, update *Update) {
 	if update.IsReleased != nil {
 		info.IsReleased = *update.IsReleased
 	}
-	return
 }
 
 func (i imlOverviewService) Update(ctx context.Context, serviceId string, update *Update) error {

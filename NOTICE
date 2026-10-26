@@ -1,0 +1,15 @@
+# NOTICE
+
+nantianmen-ai-gateway is derived from [APIPark](https://github.com/APIParkLab/APIPark),
+an open-source AI gateway & API developer portal by Eolinker, licensed under the
+Apache License, Version 2.0.
+
+This project extends APIPark with additional AI gateway capabilities
+(LLM provider management, AI API packaging, token metering and billing,
+cost optimization, etc.) and is likewise distributed under Apache-2.0.
+
+Portions of the gateway proxy engine are based on
+[eosc](https://github.com/eolinker/eosc) and the apinto gateway driver,
+Copyright (c) Eolinker, licensed under Apache-2.0.
+
+This product includes software developed at Eolinker (https://www.eolinker.com).

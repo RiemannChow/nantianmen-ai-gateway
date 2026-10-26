@@ -65,14 +65,17 @@ func ModelStateFromInt(i int) ModelState {
 }
 
 type Item struct {
-	Id       string     `json:"id"`
-	Priority int        `json:"priority"`
-	Provider *BasicItem `json:"provider"`
-	Model    *BasicItem `json:"model"`
-	Type     ModelType  `json:"type"`
-	State    ModelState `json:"state"`
-	APICount int64      `json:"api_count"`
-	KeyCount int64      `json:"key_count"`
+	Id            string     `json:"id"`
+	Priority      int        `json:"priority"`
+	Provider      *BasicItem `json:"provider"`
+	Model         *BasicItem `json:"model"`
+	Type          ModelType  `json:"type"`
+	State         ModelState `json:"state"`
+	APICount      int64      `json:"api_count"`
+	KeyCount      int64      `json:"key_count"`
+	LastCheckAt   int64      `json:"last_check_at"`
+	LastSuccessAt int64      `json:"last_success_at"`
+	FailCount     int        `json:"fail_count"`
 }
 
 type BasicItem struct {

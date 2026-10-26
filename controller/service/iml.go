@@ -26,8 +26,6 @@ import (
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/catalogue"
 
-	"github.com/RiemannChow/nantianmen-ai-gateway/module/team"
-
 	"github.com/eolinker/go-common/pm3"
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/system"
@@ -53,7 +51,6 @@ import (
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/router"
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/service"
 	service_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/service/dto"
-	"github.com/RiemannChow/nantianmen-ai-gateway/module/upstream"
 	"github.com/eolinker/go-common/store"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -75,9 +72,7 @@ type imlServiceController struct {
 	providerModule      ai.IProviderModule              `autowired:""`
 	aiLocalModel        ai_local.ILocalModelModule      `autowired:""`
 	appModule           service.IAppModule              `autowired:""`
-	upstreamModule      upstream.IUpstreamModule        `autowired:""`
 	settingModule       system.ISettingModule           `autowired:""`
-	teamModule          team.ITeamModule                `autowired:""`
 	catalogueModule     catalogue.ICatalogueModule      `autowired:""`
 	monitorModule       monitor.IMonitorStatisticModule `autowired:""`
 	monitorConfigModule monitor.IMonitorConfigModule    `autowired:""`
@@ -417,7 +412,7 @@ func (i *imlServiceController) ExportSwagger(ctx *gin.Context) {
 		ctx.JSON(200, &pm3.Response{
 			Code:    -1,
 			Success: "fail",
-			Message: fmt.Sprintf("id is required"),
+			Message: "id is required",
 		})
 		return
 	}
@@ -447,7 +442,6 @@ func (i *imlServiceController) ExportSwagger(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/octet-stream")
 	ctx.Header("Content-Transfer-Encoding", "binary")
 	ctx.Writer.Write(data)
-	return
 }
 
 func (i *imlServiceController) Swagger(ctx *gin.Context) {
@@ -456,7 +450,7 @@ func (i *imlServiceController) Swagger(ctx *gin.Context) {
 		ctx.JSON(200, &pm3.Response{
 			Code:    -1,
 			Success: "fail",
-			Message: fmt.Sprintf("id is required"),
+			Message: "id is required",
 		})
 		return
 	}
@@ -470,7 +464,6 @@ func (i *imlServiceController) Swagger(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, tmp)
-	return
 }
 
 func (i *imlServiceController) Simple(ctx *gin.Context) ([]*service_dto.SimpleServiceItem, error) {

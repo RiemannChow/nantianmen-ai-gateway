@@ -27,6 +27,8 @@ import (
 
 	ai_key_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/ai-key/dto"
 	ai_key "github.com/RiemannChow/nantianmen-ai-gateway/service/ai-key"
+
+	"github.com/RiemannChow/nantianmen-ai-gateway/module/audit"
 )
 
 var _ IKeyModule = &imlKeyModule{}
@@ -78,7 +80,7 @@ func (i *imlKeyModule) Create(ctx context.Context, providerId string, input *ai_
 	if err != nil {
 		return fmt.Errorf("get key error: %v", err)
 	}
-	return i.transaction.Transaction(ctx, func(ctx context.Context) error {
+	err = i.transaction.Transaction(ctx, func(ctx context.Context) error {
 		if input.Id == "" {
 			input.Id = uuid.NewString()
 		}
@@ -96,11 +98,23 @@ func (i *imlKeyModule) Create(ctx context.Context, providerId string, input *ai_
 			ExpireTime: input.ExpireTime,
 			Priority:   priority + 1,
 		})
+		if err != nil {
+			return err
+		}
 
 		info, _ := i.aiKeyService.Get(ctx, input.Id)
 		releases := []*gateway.DynamicRelease{newKey(info)}
 		return i.syncGateway(ctx, cluster.DefaultClusterID, releases, true)
 	})
+	if err == nil {
+		audit.Log(ctx, &audit.AddInput{
+			ResourceType: "ai-key",
+			ResourceID:   providerId + "/" + input.Id,
+			Action:       audit.ActionCreate,
+			Detail:       "创建密钥(" + input.Name + ")",
+		})
+	}
+	return err
 }
 
 func (i *imlKeyModule) syncGateway(ctx context.Context, clusterId string, releases []*gateway.DynamicRelease, online bool) error {
@@ -212,7 +226,7 @@ func (i *imlKeyModule) Delete(ctx context.Context, providerId string, id string)
 	if err != nil {
 		return fmt.Errorf("provider not found: %w", err)
 	}
-	return i.transaction.Transaction(ctx, func(ctx context.Context) error {
+	err = i.transaction.Transaction(ctx, func(ctx context.Context) error {
 		info, err := i.aiKeyService.Get(ctx, id)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -250,6 +264,15 @@ func (i *imlKeyModule) Delete(ctx context.Context, providerId string, id string)
 		},
 		}, false)
 	})
+	if err == nil {
+		audit.Log(ctx, &audit.AddInput{
+			ResourceType: "ai-key",
+			ResourceID:   providerId + "/" + id,
+			Action:       audit.ActionDelete,
+			Detail:       "删除密钥(" + id + ")",
+		})
+	}
+	return err
 }
 
 func (i *imlKeyModule) Get(ctx context.Context, providerId string, id string) (*ai_key_dto.Key, error) {

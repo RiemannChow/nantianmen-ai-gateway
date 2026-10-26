@@ -2,7 +2,7 @@ package dynamic_module
 
 import (
 	"reflect"
-	
+
 	dynamic_module_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/dynamic-module/dto"
 	"github.com/eolinker/go-common/autowire"
 	"github.com/gin-gonic/gin"

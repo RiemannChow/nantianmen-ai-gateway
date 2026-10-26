@@ -75,7 +75,7 @@ func formatFilter(wheres []monitor.MonWhereItem) string {
 			if len(where.Values) > 0 {
 				wl := make([]string, 0, len(where.Values))
 				for _, v := range where.Values {
-					wl = append(wl, fmt.Sprintf(fmt.Sprintf(`r["%s"] == "%s"`, where.Key, v)))
+					wl = append(wl, fmt.Sprintf(`r["%s"] == "%s"`, where.Key, v))
 				}
 				filters = append(filters, fmt.Sprint("(", strings.Join(wl, " or "), ")"))
 			}

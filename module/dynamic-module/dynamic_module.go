@@ -3,11 +3,11 @@ package dynamic_module
 import (
 	"context"
 	"reflect"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/gateway"
-	
+
 	"github.com/eolinker/go-common/autowire"
-	
+
 	dynamic_module_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/dynamic-module/dto"
 )
 
@@ -20,7 +20,7 @@ type IDynamicModuleModule interface {
 	PluginInfo(ctx context.Context, module string, clusterIds ...string) (*dynamic_module_dto.PluginInfo, error)
 	Render(ctx context.Context, module string) (map[string]interface{}, error)
 	ModuleDrivers(ctx context.Context, group string) ([]*dynamic_module_dto.ModuleDriver, error)
-	
+
 	Online(ctx context.Context, module string, id string) error
 	Offline(ctx context.Context, module string, id string) error
 	//PartitionStatuses(ctx context.Context, module string, keyword string, page int, pageSize int) (map[string]map[string]string, error)

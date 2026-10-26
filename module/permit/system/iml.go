@@ -19,7 +19,6 @@ var (
 )
 
 type imlSystemPermitModule struct {
-	permitService     permit.IPermit          `autowired:""`
 	roleService       role.IRoleService       `autowired:""`
 	roleMemberService role.IRoleMemberService `autowired:""`
 }

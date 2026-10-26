@@ -2,7 +2,7 @@ package publish
 
 import (
 	"reflect"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/publish/dto"
 	"github.com/eolinker/go-common/autowire"
 	"github.com/gin-gonic/gin"

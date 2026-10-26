@@ -5,9 +5,15 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 )
 
-var client = http.Client{}
+// client is the shared HTTP client used to call upstream APIs exposed through
+// MCP tools. The timeout guards against slow upstreams holding goroutines and
+// connections indefinitely.
+var client = http.Client{
+	Timeout: 30 * time.Second,
+}
 
 type Position string
 
@@ -45,6 +51,11 @@ func (p *Param) Description() string {
 
 func (p *Param) Required() bool {
 	return p.required
+}
+
+// Position 返回参数所在位置（header/body/query/path）。
+func (p *Param) Position() Position {
+	return p.position
 }
 
 type BodyParam struct {

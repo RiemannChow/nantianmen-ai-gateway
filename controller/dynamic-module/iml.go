@@ -3,7 +3,7 @@ package dynamic_module
 import (
 	"encoding/json"
 	"strconv"
-	
+
 	dynamic_module "github.com/RiemannChow/nantianmen-ai-gateway/module/dynamic-module"
 	dynamic_module_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/dynamic-module/dto"
 	"github.com/gin-gonic/gin"
@@ -87,7 +87,7 @@ func (i *imlDynamicModuleController) List(ctx *gin.Context, module string, keywo
 	ps, err := strconv.Atoi(pageSize)
 	if err != nil {
 		ps = 20
-		
+
 	}
 	list, total, err := i.module.List(ctx, module, keyword, p, ps)
 	if err != nil {

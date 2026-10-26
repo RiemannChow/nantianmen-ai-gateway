@@ -2,7 +2,7 @@ package catalogue
 
 import (
 	"reflect"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/universally"
 	"github.com/eolinker/go-common/autowire"
 )

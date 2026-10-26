@@ -13,6 +13,9 @@ export interface LoadBalancingItems {
   state: string
   apiCount: string
   keyCount: string
+  lastCheckAt: string
+  lastSuccessAt: string
+  failCount: string
 }
 
 export interface LoadModelDetailData {

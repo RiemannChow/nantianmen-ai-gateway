@@ -48,5 +48,9 @@ func (p *plugin) aiBalanceAPIs() []pm3.Api {
 		pm3.CreateApiWidthDoc(http.MethodPut, "/api/v1/ai/balance/sort", []string{"context", "body"}, nil, p.aiBalanceController.Sort),
 		pm3.CreateApiWidthDoc(http.MethodPost, "/api/v1/ai/balance", []string{"context", "body"}, nil, p.aiBalanceController.Create),
 		pm3.CreateApiWidthDoc(http.MethodDelete, "/api/v1/ai/balance", []string{"context", "query:id"}, nil, p.aiBalanceController.Delete),
+		pm3.CreateApiWidthDoc(http.MethodPost, "/api/v1/ai/balance/probe", []string{"context", "query:id"}, nil, p.aiBalanceController.Probe),
+		pm3.CreateApiWidthDoc(http.MethodPost, "/api/v1/ai/balance/probe/batch", []string{"context"}, nil, p.aiBalanceController.BatchProbe),
+		pm3.CreateApiWidthDoc(http.MethodGet, "/api/v1/ai/balance/auto-failover", []string{"context"}, []string{"enabled"}, p.aiBalanceController.GetAutoFailover),
+		pm3.CreateApiWidthDoc(http.MethodPut, "/api/v1/ai/balance/auto-failover", []string{"context", "query:enabled"}, nil, p.aiBalanceController.SetAutoFailover),
 	}
 }

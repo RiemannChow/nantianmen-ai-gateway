@@ -7,6 +7,7 @@ import AiServiceOutlet from '@core/pages/aiService/AiServiceOutlet'
 import Guide from '@core/pages/guide/Guide'
 import Login from '@core/pages/Login'
 import ServicePolicyLayout from '@core/pages/policy/ServicePolicyLayout'
+import StrategyConfig from '@core/pages/policy/generic/StrategyConfig'
 import SystemOutlet from '@core/pages/system/SystemOutlet'
 import { TenantManagementProvider } from '@market/contexts/TenantManagementContext'
 import { lazy } from 'react'
@@ -268,6 +269,33 @@ export const routerMap: Map<string, RouterMapConfig> = new Map([
                           key: 'dataMaskingAdd'
                         }
                       ]
+                    },
+                    {
+                      path: 'limiting',
+                      component: <Outlet />,
+                      key: 'limitingPolicy',
+                      children: [
+                        { path: 'create', component: <StrategyConfig driver="limiting" />, key: 'limitingAdd' },
+                        { path: ':policyId', component: <StrategyConfig driver="limiting" />, key: 'limitingEdit' }
+                      ]
+                    },
+                    {
+                      path: 'fuse',
+                      component: <Outlet />,
+                      key: 'fusePolicy',
+                      children: [
+                        { path: 'create', component: <StrategyConfig driver="fuse" />, key: 'fuseAdd' },
+                        { path: ':policyId', component: <StrategyConfig driver="fuse" />, key: 'fuseEdit' }
+                      ]
+                    },
+                    {
+                      path: 'grey',
+                      component: <Outlet />,
+                      key: 'greyPolicy',
+                      children: [
+                        { path: 'create', component: <StrategyConfig driver="grey" />, key: 'greyAdd' },
+                        { path: ':policyId', component: <StrategyConfig driver="grey" />, key: 'greyEdit' }
+                      ]
                     }
                   ]
                 }
@@ -455,6 +483,60 @@ export const routerMap: Map<string, RouterMapConfig> = new Map([
                           key: 'dataMaskingAdd'
                         }
                       ]
+                    },
+                    {
+                      path: 'limiting',
+                      component: <Outlet />,
+                      key: 'limitingPolicy',
+                      children: [
+                        { path: 'create', component: <StrategyConfig driver="limiting" />, key: 'limitingAdd' },
+                        { path: ':policyId', component: <StrategyConfig driver="limiting" />, key: 'limitingEdit' }
+                      ]
+                    },
+                    {
+                      path: 'fuse',
+                      component: <Outlet />,
+                      key: 'fusePolicy',
+                      children: [
+                        { path: 'create', component: <StrategyConfig driver="fuse" />, key: 'fuseAdd' },
+                        { path: ':policyId', component: <StrategyConfig driver="fuse" />, key: 'fuseEdit' }
+                      ]
+                    },
+                    {
+                      path: 'grey',
+                      component: <Outlet />,
+                      key: 'greyPolicy',
+                      children: [
+                        { path: 'create', component: <StrategyConfig driver="grey" />, key: 'greyAdd' },
+                        { path: ':policyId', component: <StrategyConfig driver="grey" />, key: 'greyEdit' }
+                      ]
+                    },
+                    {
+                      path: 'piiMask',
+                      component: <Outlet />,
+                      key: 'piiMaskPolicy',
+                      children: [
+                        { path: 'create', component: <StrategyConfig driver="pii-mask" />, key: 'piiMaskAdd' },
+                        { path: ':policyId', component: <StrategyConfig driver="pii-mask" />, key: 'piiMaskEdit' }
+                      ]
+                    },
+                    {
+                      path: 'promptInjection',
+                      component: <Outlet />,
+                      key: 'promptInjectionPolicy',
+                      children: [
+                        { path: 'create', component: <StrategyConfig driver="prompt-injection" />, key: 'promptInjectionAdd' },
+                        { path: ':policyId', component: <StrategyConfig driver="prompt-injection" />, key: 'promptInjectionEdit' }
+                      ]
+                    },
+                    {
+                      path: 'contentModeration',
+                      component: <Outlet />,
+                      key: 'contentModerationPolicy',
+                      children: [
+                        { path: 'create', component: <StrategyConfig driver="content-moderation" />, key: 'contentModerationAdd' },
+                        { path: ':policyId', component: <StrategyConfig driver="content-moderation" />, key: 'contentModerationEdit' }
+                      ]
                     }
                   ]
                 }
@@ -478,7 +560,7 @@ export const routerMap: Map<string, RouterMapConfig> = new Map([
     'cluster',
     {
       type: 'component',
-      lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/partitions/PartitionInsideCluster.tsx'))
+      lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/cluster/ClusterManage.tsx'))
     }
   ],
   [
@@ -712,6 +794,14 @@ export const routerMap: Map<string, RouterMapConfig> = new Map([
     }
   ],
   [
+    'audit',
+    {
+      type: 'module',
+      lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/audit/AuditList.tsx')),
+      key: 'audit'
+    }
+  ],
+  [
     'analytics',
     {
       type: 'module',
@@ -842,6 +932,84 @@ export const routerMap: Map<string, RouterMapConfig> = new Map([
               key: 'dataMaskingAdd'
             }
           ]
+        },
+        {
+          path: 'limiting',
+          component: <Outlet />,
+          key: 'limitingPolicy',
+          children: [
+            {
+              path: 'create',
+              component: <StrategyConfig driver="limiting" />,
+              key: 'limitingAdd'
+            },
+            {
+              path: ':policyId',
+              component: <StrategyConfig driver="limiting" />,
+              key: 'limitingEdit'
+            }
+          ]
+        },
+        {
+          path: 'fuse',
+          component: <Outlet />,
+          key: 'fusePolicy',
+          children: [
+            {
+              path: 'create',
+              component: <StrategyConfig driver="fuse" />,
+              key: 'fuseAdd'
+            },
+            {
+              path: ':policyId',
+              component: <StrategyConfig driver="fuse" />,
+              key: 'fuseEdit'
+            }
+          ]
+        },
+        {
+          path: 'grey',
+          component: <Outlet />,
+          key: 'greyPolicy',
+          children: [
+            {
+              path: 'create',
+              component: <StrategyConfig driver="grey" />,
+              key: 'greyAdd'
+            },
+            {
+              path: ':policyId',
+              component: <StrategyConfig driver="grey" />,
+              key: 'greyEdit'
+            }
+          ]
+        },
+        {
+          path: 'piiMask',
+          component: <Outlet />,
+          key: 'piiMaskPolicy',
+          children: [
+            { path: 'create', component: <StrategyConfig driver="pii-mask" />, key: 'piiMaskAdd' },
+            { path: ':policyId', component: <StrategyConfig driver="pii-mask" />, key: 'piiMaskEdit' }
+          ]
+        },
+        {
+          path: 'promptInjection',
+          component: <Outlet />,
+          key: 'promptInjectionPolicy',
+          children: [
+            { path: 'create', component: <StrategyConfig driver="prompt-injection" />, key: 'promptInjectionAdd' },
+            { path: ':policyId', component: <StrategyConfig driver="prompt-injection" />, key: 'promptInjectionEdit' }
+          ]
+        },
+        {
+          path: 'contentModeration',
+          component: <Outlet />,
+          key: 'contentModerationPolicy',
+          children: [
+            { path: 'create', component: <StrategyConfig driver="content-moderation" />, key: 'contentModerationAdd' },
+            { path: ':policyId', component: <StrategyConfig driver="content-moderation" />, key: 'contentModerationEdit' }
+          ]
         }
       ]
     }
@@ -875,6 +1043,76 @@ export const routerMap: Map<string, RouterMapConfig> = new Map([
           key: 'loadBalancingList'
         }
       ]
+    }
+  ],
+  [
+    'prompt',
+    {
+      type: 'module',
+      lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/prompt/PromptManagementLayout.tsx')),
+      key: 'prompt',
+      children: [
+        {
+          path: 'list',
+          lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/prompt/PromptManagement.tsx')),
+          key: 'promptList'
+        }
+      ]
+    }
+  ],
+  [
+    'semanticCache',
+    {
+      type: 'module',
+      lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/cache/SemanticCacheLayout.tsx')),
+      key: 'semanticCache',
+      children: [
+        {
+          path: 'list',
+          lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/cache/SemanticCache.tsx')),
+          key: 'semanticCacheList'
+        }
+      ]
+    }
+  ],
+  [
+    'billing',
+    {
+      type: 'module',
+      lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/billing/Billing.tsx')),
+      key: 'billing'
+    }
+  ],
+  [
+    'costopt',
+    {
+      type: 'module',
+      lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/costopt/CostOptimization.tsx')),
+      key: 'costopt'
+    }
+  ],
+  [
+    'aisecurity',
+    {
+      type: 'module',
+      lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/aisecurity/AISecurity.tsx')),
+      key: 'aisecurity'
+    }
+  ],
+  [
+    'tracing',
+    {
+      type: 'module',
+      lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/tracing/Tracing.tsx')),
+      key: 'tracing'
+    }
+  ],
+  [
+    'multitenant',
+    {
+      type: 'module',
+      lazy: lazy(() => import(/* webpackChunkName: "[request]" */ '@core/pages/multitenant/MultiTenant.tsx')),
+      key: 'multitenant'
     }
   ]
 ])

@@ -2,7 +2,7 @@ package catalogue
 
 import (
 	"sort"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/catalogue"
 )
 
@@ -72,7 +72,7 @@ func NewRoot(list []*catalogue.Catalogue) *Root {
 				p.children = append(p.children, i)
 				p.parents = getParents(i.Parent, m, parentMap)
 			}
-			
+
 		} else {
 			root.children = append(root.children, i)
 		}
@@ -132,7 +132,7 @@ func (g Groups) Len() int {
 
 func (g Groups) Less(i, j int) bool {
 	if g[i].Depth == g[j].Depth {
-		if g[i].Parent == g[i].Parent {
+		if g[i].Parent == g[j].Parent {
 			if g[i].sort == g[j].sort {
 				return g[i].Uuid < g[j].Uuid
 			}

@@ -3,9 +3,9 @@ package cluster
 import (
 	"context"
 	"sync"
-	
+
 	cluster_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/cluster/dto"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/gateway/admin"
 )
 
@@ -13,14 +13,14 @@ func nodeStatus(ctx context.Context, nodes []*cluster_dto.Node) {
 	if len(nodes) == 0 {
 		return
 	}
-	
+
 	if len(nodes) == 1 {
 		nodes[0].Status = ping(ctx, nodes[0].Admins...)
 	}
-	
+
 	wg := sync.WaitGroup{}
 	wg.Add(len(nodes))
-	
+
 	for _, n := range nodes {
 		go doPingRouting(ctx, n, &wg)
 	}
@@ -38,6 +38,6 @@ func ping(ctx context.Context, address ...string) int {
 	if err != nil {
 		return 0
 	}
-	
+
 	return 1
 }

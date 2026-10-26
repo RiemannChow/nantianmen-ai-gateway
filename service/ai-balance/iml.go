@@ -150,6 +150,20 @@ func (i *imlBalanceService) SortAfter(ctx context.Context, originID string, targ
 	return result, nil
 }
 
+func (i *imlBalanceService) UpdateHealth(ctx context.Context, id string, state int, lastCheckAt int64, lastSuccessAt int64, failCount int64) error {
+	info, err := i.store.GetByUUID(ctx, id)
+	if err != nil {
+		return err
+	}
+	info.State = state
+	info.LastCheckAt = lastCheckAt
+	info.LastSuccessAt = lastSuccessAt
+	info.FailCount = int(failCount)
+	info.UpdateAt = time.Now()
+	_, err = i.store.Update(ctx, info)
+	return err
+}
+
 func createEntityHandler(i *Create) *ai.Balance {
 	now := time.Now()
 	return &ai.Balance{

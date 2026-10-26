@@ -3,11 +3,11 @@ package apikey
 import (
 	"encoding/json"
 	"fmt"
-	
+
 	auth_driver "github.com/RiemannChow/nantianmen-ai-gateway/module/application-authorization/auth-driver"
-	
+
 	"github.com/eolinker/go-common/utils"
-	
+
 	application_authorization_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/application-authorization/dto"
 )
 

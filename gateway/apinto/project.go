@@ -156,10 +156,6 @@ func matchLabels[T any](ctx context.Context, client admin_client.Client, profess
 	}
 	return items, nil
 }
-func (p *ProjectClient) matchLabels(ctx context.Context, profession string, labels map[string]string) ([]*entity.BasicInfo, error) {
-	return matchLabels[entity.BasicInfo](ctx, p.client, profession, labels)
-}
-
 func (p *ProjectClient) deleteByLabels(ctx context.Context, profession string, labels map[string]string) error {
 	list, err := p.client.MatchLabels(ctx, profession, labels)
 	if err != nil {

@@ -87,12 +87,10 @@ func (i *imlProviderModule) OnInit() {
 			// get customize models
 			models, _ := i.providerModelService.Search(ctx, "", map[string]interface{}{"provider": p.Id}, "update_at desc")
 			iModels := make([]model_runtime.IModel, 0, len(models))
-			if models != nil {
-				for _, model := range models {
-					// parse access_config & model_parameters
-					iModel, _ := model_runtime.NewCustomizeModel(model.Id, model.Name, model_runtime.GetCustomizeLogo(), model.AccessConfiguration, model.ModelParameters)
-					iModels = append(iModels, iModel)
-				}
+			for _, model := range models {
+				// parse access_config & model_parameters
+				iModel, _ := model_runtime.NewCustomizeModel(model.Id, model.Name, model_runtime.GetCustomizeLogo(), model.AccessConfiguration, model.ModelParameters)
+				iModels = append(iModels, iModel)
 			}
 			// default provider
 			if p.Type == 0 {
@@ -801,7 +799,7 @@ type imlAIApiModule struct {
 }
 
 func (i *imlAIApiModule) APIs(ctx context.Context, keyword string, providerId string, start int64, end int64, page int, pageSize int, sortCondition string, asc bool, models []string, serviceIds []string) ([]*ai_dto.APIItem, *ai_dto.Condition, int64, error) {
-	modelItems := make([]*ai_dto.BasicInfo, 0)
+	var modelItems []*ai_dto.BasicInfo
 	if providerId == ai_provider_local.ProviderLocal {
 		items, err := i.aiLocalModelService.Search(ctx, "", nil, "update_at desc")
 		if err != nil {

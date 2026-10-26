@@ -3,11 +3,11 @@ package catalogue
 import (
 	"github.com/gin-gonic/gin"
 	"reflect"
-	
+
 	tag_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/tag/dto"
-	
+
 	catalogue_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/catalogue/dto"
-	
+
 	"github.com/eolinker/go-common/autowire"
 )
 

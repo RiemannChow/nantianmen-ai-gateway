@@ -34,7 +34,7 @@ func (c *ClientDriver) Commit(ctx context.Context) error {
 }
 
 func (c *ClientDriver) Rollback(ctx context.Context) error {
-	return c.Rollback(ctx)
+	return c.client.Rollback(ctx)
 }
 
 func (c *ClientDriver) Begin(ctx context.Context) error {

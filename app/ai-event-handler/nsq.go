@@ -65,7 +65,6 @@ type NSQHandler struct {
 	aiService     ai.IProviderService   `autowired:""`
 	transaction   store.ITransaction    `autowired:""`
 	nsqConfig     *NSQConfig            `autowired:""`
-	ctx           context.Context
 }
 
 func convertInt(value interface{}) int {
@@ -107,7 +106,7 @@ func (h *NSQHandler) HandleMessage(message *nsq.Message) error {
 	hour := time.Date(timestamp.Year(), timestamp.Month(), timestamp.Day(), timestamp.Hour(), 0, 0, 0, timestamp.Location())
 	minute := time.Date(timestamp.Year(), timestamp.Month(), timestamp.Day(), timestamp.Hour(), timestamp.Minute(), 0, 0, timestamp.Location())
 	return h.transaction.Transaction(context.Background(), func(ctx context.Context) error {
-		finalStatus := &AIProviderStatus{}
+		var finalStatus *AIProviderStatus
 		for _, s := range data.AI.ProviderStats {
 			status := ToKeyStatus(s.Status).Int()
 			key := genAIKey(s.Key, s.Provider)

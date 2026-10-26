@@ -113,7 +113,7 @@ func (i *imlExportConfigController) ExportAll(ctx *gin.Context) error {
 	}
 	buf, err := zipFile(files)
 	if err != nil {
-
+		return err
 	}
 
 	ctx.DataFromReader(http.StatusOK, int64(buf.Len()), "application/zip", buf, map[string]string{

@@ -34,6 +34,10 @@ import (
 
 	strategy_driver "github.com/RiemannChow/nantianmen-ai-gateway/module/strategy/driver"
 
+	"github.com/RiemannChow/nantianmen-ai-gateway/module/license"
+
+	"github.com/RiemannChow/nantianmen-ai-gateway/module/audit"
+
 	strategy_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/strategy/dto"
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/strategy"
@@ -228,9 +232,36 @@ func (i *imlStrategyModule) Get(ctx context.Context, id string) (*strategy_dto.S
 	return s, nil
 }
 
+// enterpriseDrivers are the strategy drivers gated behind the commercial
+// "advanced_policy" license module.
+var enterpriseDrivers = map[string]bool{
+	"limiting": true,
+	"fuse":     true,
+	"grey":     true,
+}
+
+// aiSecurityDrivers are the strategy drivers gated behind the commercial
+// "ai_security" license module (PII masking, prompt-injection detection,
+// content moderation / guardrails).
+var aiSecurityDrivers = map[string]bool{
+	"pii-mask":           true,
+	"prompt-injection":   true,
+	"content-moderation": true,
+}
+
 func (i *imlStrategyModule) Create(ctx context.Context, input *strategy_dto.Create) error {
 	if input.Name == "" {
 		return fmt.Errorf("name required")
+	}
+	if enterpriseDrivers[input.Driver] {
+		if err := license.Check(ctx, "advanced_policy"); err != nil {
+			return err
+		}
+	}
+	if aiSecurityDrivers[input.Driver] {
+		if err := license.Check(ctx, "ai_security"); err != nil {
+			return err
+		}
 	}
 	if input.ID == "" {
 		input.ID = uuid.NewString()
@@ -270,6 +301,16 @@ func (i *imlStrategyModule) Edit(ctx context.Context, id string, input *strategy
 	info, err := i.strategyService.Get(ctx, id)
 	if err != nil {
 		return err
+	}
+	if enterpriseDrivers[info.Driver] {
+		if err := license.Check(ctx, "advanced_policy"); err != nil {
+			return err
+		}
+	}
+	if aiSecurityDrivers[info.Driver] {
+		if err := license.Check(ctx, "ai_security"); err != nil {
+			return err
+		}
 	}
 	if input.Priority != nil && *input.Priority < 1 {
 		*input.Priority = 1000
@@ -317,12 +358,22 @@ func (i *imlStrategyModule) Publish(ctx context.Context, driver string, scope st
 	if !has {
 		return fmt.Errorf("driver not found: %s", driver)
 	}
+	if enterpriseDrivers[driver] {
+		if err := license.Check(ctx, "advanced_policy"); err != nil {
+			return err
+		}
+	}
+	if aiSecurityDrivers[driver] {
+		if err := license.Check(ctx, "ai_security"); err != nil {
+			return err
+		}
+	}
 	list, err := i.strategyService.AllByDriver(ctx, driver, strategy_dto.ToScope(scope).Int(), target)
 	if err != nil {
 		return err
 	}
 
-	return i.transaction.Transaction(ctx, func(txCtx context.Context) error {
+	err = i.transaction.Transaction(ctx, func(txCtx context.Context) error {
 		publishStrategies := make([]*eosc.Base[gateway.StrategyRelease], 0, len(list))
 		for _, l := range list {
 			if l.IsDelete {
@@ -347,6 +398,15 @@ func (i *imlStrategyModule) Publish(ctx context.Context, driver string, scope st
 		}()
 		return client.Strategy().Online(ctx, publishStrategies...)
 	})
+	if err == nil {
+		audit.Log(ctx, &audit.AddInput{
+			ResourceType: "strategy",
+			ResourceID:   driver + "/" + scope + "/" + target,
+			Action:       audit.ActionPublish,
+			Detail:       "发布策略(" + driver + ")",
+		})
+	}
+	return err
 }
 
 func (i *imlStrategyModule) Delete(ctx context.Context, id string) error {

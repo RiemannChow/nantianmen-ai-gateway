@@ -2,7 +2,7 @@ package plugin_cluster
 
 import (
 	"reflect"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/model/plugin_model"
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/plugin-cluster/dto"
 	"github.com/eolinker/go-common/autowire"

@@ -53,7 +53,6 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.NotFound(w, r)
-	return
 }
 
 func (s *Server) Set(id string, ser *server.MCPServer) {
@@ -118,7 +117,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.NotFound(w, r)
-	return
 }
 
 func genPath(path string) (sid string, err error) {

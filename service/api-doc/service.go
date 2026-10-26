@@ -39,18 +39,12 @@ func init() {
 	commit.InitCommitWithKeyService[DocCommit]("service", "api_doc")
 }
 
-const (
-	openAPIv3 = "v3"
-	openAPIv2 = "v2"
-)
-
 var (
 	openapi3Loader = openapi3.NewLoader()
 )
 
 type DocLoader struct {
 	openAPI3Doc *openapi3.T
-	version     string
 }
 
 func NewDocLoader(content string) (*DocLoader, error) {

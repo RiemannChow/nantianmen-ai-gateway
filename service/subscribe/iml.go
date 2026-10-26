@@ -174,9 +174,6 @@ func (i *imlSubscribeService) OnComplete() {
 	i.IServiceEdit = universally.NewEdit[UpdateSubscribe, subscribe.Subscribe](i.store, i.updateHandler, i.labelHandler)
 }
 
-func (i *imlSubscribeService) idHandler(e *subscribe.Subscribe) int64 {
-	return e.Id
-}
 func (i *imlSubscribeService) labelHandler(e *subscribe.Subscribe) []string {
 	return []string{e.Service}
 }
@@ -253,10 +250,6 @@ func (i *imlSubscribeApplyService) OnComplete() {
 	i.IServiceCreate = universally.NewCreator[CreateApply, subscribe.Apply](i.store, "subscribe_apply", i.createEntityHandler, i.uniquestHandler, i.labelHandler)
 	i.IServiceDelete = universally.NewDelete[subscribe.Apply](i.store)
 	i.IServiceEdit = universally.NewEdit[EditApply, subscribe.Apply](i.store, i.updateHandler, i.labelHandler)
-}
-
-func (i *imlSubscribeApplyService) idHandler(e *subscribe.Apply) int64 {
-	return e.Id
 }
 
 func (i *imlSubscribeApplyService) labelHandler(e *subscribe.Apply) []string {

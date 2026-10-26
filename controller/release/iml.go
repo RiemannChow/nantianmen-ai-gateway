@@ -17,7 +17,7 @@ type imlReleaseController struct {
 }
 
 func (c *imlReleaseController) Create(ctx *gin.Context, project string, input *dto.CreateInput) error {
-	
+
 	_, err := c.module.Create(ctx, project, input)
 	return err
 }
@@ -35,7 +35,7 @@ func (c *imlReleaseController) Preview(ctx *gin.Context, project string) (*dto.R
 	if err != nil {
 		return nil, nil, false, err
 	}
-	
+
 	out, err := c.diffModule.Out(ctx, diff)
 	if err != nil {
 		return nil, nil, false, err

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/eolinker/go-common/server"
@@ -37,7 +38,6 @@ import (
 	"github.com/eolinker/eosc/log"
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/publish/dto"
-	releaseModule "github.com/RiemannChow/nantianmen-ai-gateway/module/release"
 	serviceDiff "github.com/RiemannChow/nantianmen-ai-gateway/module/service-diff"
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/cluster"
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/publish"
@@ -56,7 +56,6 @@ var (
 
 type imlPublishModule struct {
 	projectDiffModule      serviceDiff.IServiceDiffModule    `autowired:""`
-	releaseModule          releaseModule.IReleaseModule      `autowired:""`
 	publishService         publish.IPublishService           `autowired:""`
 	apiService             api.IAPIService                   `autowired:""`
 	apiDocService          api_doc.IAPIDocService            `autowired:""`
@@ -282,7 +281,7 @@ func (i *imlPublishModule) getProjectRelease(ctx context.Context, projectID stri
 			var cfg interface{}
 			json.Unmarshal([]byte(s.Config), &cfg)
 			strategyReleases = append(strategyReleases, driver.ToRelease(&strategy_dto.Strategy{
-				Id:       fmt.Sprintf("%s", s.Id),
+				Id:       s.Id,
 				Name:     s.Name,
 				Priority: s.Priority,
 				Filters:  filters,
@@ -349,7 +348,7 @@ func (i *imlPublishModule) PublishStatuses(ctx context.Context, serviceId string
 	return utils.SliceToSlice(list, func(s *publish.Status) *dto.PublishStatus {
 		status := s.Status
 		errMsg := s.Error
-		if s.Status == publish.StatusPublishing && time.Now().Sub(s.UpdateAt) > 30*time.Second {
+		if s.Status == publish.StatusPublishing && time.Since(s.UpdateAt) > 30*time.Second {
 			status = publish.StatusPublishError
 			errMsg = "发布超时"
 		}
@@ -584,7 +583,20 @@ func (i *imlPublishModule) Publish(ctx context.Context, serviceId string, id str
 	if err != nil {
 		return err
 	}
-	clusterIds := utils.SliceToSlice(clusters, func(i *cluster.Cluster) string {
+	// DR failover: only publish to enabled clusters, ordered by priority so the
+	// primary (lowest priority value) is attempted first and backups take over
+	// when the primary is unavailable. Per-cluster failure is tolerated (continue)
+	// so a down primary does not block the backup from receiving the release.
+	enabled := make([]*cluster.Cluster, 0, len(clusters))
+	for _, c := range clusters {
+		if c.Enabled {
+			enabled = append(enabled, c)
+		}
+	}
+	sort.SliceStable(enabled, func(i, j int) bool {
+		return enabled[i].Priority < enabled[j].Priority
+	})
+	clusterIds := utils.SliceToSlice(enabled, func(i *cluster.Cluster) string {
 		return i.Uuid
 	})
 
@@ -594,7 +606,7 @@ func (i *imlPublishModule) Publish(ctx context.Context, serviceId string, id str
 	}
 	hasError := false
 	return i.transaction.Transaction(ctx, func(ctx context.Context) error {
-		for _, c := range clusters {
+		for _, c := range enabled {
 			err = i.publish(ctx, flow.Id, c.Uuid, projectReleaseMap[c.Uuid])
 			if err != nil {
 				hasError = true
@@ -650,25 +662,6 @@ func (i *imlPublishModule) List(ctx context.Context, serviceId string, page, pag
 	return utils.SliceToSlice(list, func(s *publish.Publish) *dto.Publish {
 		return dto.FromModel(s, "")
 	}), total, nil
-}
-
-func (i *imlPublishModule) updateMCPServer(ctx context.Context, sid string, name string, version string) error {
-	r, err := i.releaseService.GetRunning(ctx, sid)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil
-		}
-		return err
-	}
-	_, _, apiDocCommit, _, _, err := i.releaseService.GetReleaseInfos(ctx, r.UUID)
-	if err != nil {
-		return fmt.Errorf("get release info error: %w", err)
-	}
-	commitDoc, err := i.apiDocService.GetDocCommit(ctx, apiDocCommit.Commit)
-	if err != nil {
-		return fmt.Errorf("get api doc commit error: %w", err)
-	}
-	return mcp_server.SetServerByOpenapi(sid, name, version, commitDoc.Data.Content)
 }
 
 func (i *imlPublishModule) Detail(ctx context.Context, serviceId string, id string) (*dto.PublishDetail, error) {

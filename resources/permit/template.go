@@ -42,18 +42,18 @@ func init() {
 			if !has {
 				continue
 			}
-			
+
 			if _, h := v.data[domain]; !h {
 				v.data[domain] = make(map[string][]string)
 			}
-			
+
 			for access, ts := range grants {
 				v.data[domain][fmt.Sprintf("%s.%s", group, access)] = utils.SliceToSlice(ts, func(s string) string {
 					return permit_type.Special.KeyOf(s)
 				})
 			}
 		}
-		
+
 		return reflect.ValueOf(v)
 	})
 }

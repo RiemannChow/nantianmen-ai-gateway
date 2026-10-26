@@ -71,19 +71,22 @@ func (i *Key) IdValue() int64 {
 }
 
 type Balance struct {
-	Id           int64     `gorm:"column:id;type:BIGINT(20);AUTO_INCREMENT;NOT NULL;comment:id;primary_key;comment:主键ID;"`
-	Uuid         string    `gorm:"type:varchar(36);not null;column:uuid;uniqueIndex:uuid;comment:UUID;"`
-	Provider     string    `gorm:"type:varchar(100);not null;column:provider;comment:供应商ID;uniqueIndex:provider_model" aovalue:"provider`
-	ProviderName string    `gorm:"type:varchar(100);not null;column:provider_name;comment:供应商名称"`
-	Model        string    `gorm:"type:varchar(100);not null;column:model;comment:模型ID;uniqueIndex:provider_model"`
-	ModelName    string    `gorm:"type:varchar(100);not null;column:model_name;comment:模型名称"`
-	Type         int       `gorm:"type:tinyint(1);not null;column:type;comment:类型,0：online，1：local"`
-	State        int       `gorm:"type:tinyint(1);not null;column:state;comment:状态,0：异常，1：正常;default:1"`
-	Priority     int       `gorm:"type:int;not null;column:priority;comment:优先级，数字越小优先级越大"`
-	Creator      string    `gorm:"size:36;not null;column:creator;comment:创建人;index:creator" aovalue:"creator"` // 创建人
-	Updater      string    `gorm:"size:36;not null;column:updater;comment:更新人;index:updater" aovalue:"updater"` // 更新人
-	CreateAt     time.Time `gorm:"type:timestamp;NOT NULL;DEFAULT:CURRENT_TIMESTAMP;column:create_at;comment:创建时间"`
-	UpdateAt     time.Time `gorm:"type:timestamp;NOT NULL;DEFAULT:CURRENT_TIMESTAMP;column:update_at;comment:更新时间"`
+	Id            int64     `gorm:"column:id;type:BIGINT(20);AUTO_INCREMENT;NOT NULL;comment:id;primary_key;comment:主键ID;"`
+	Uuid          string    `gorm:"type:varchar(36);not null;column:uuid;uniqueIndex:uuid;comment:UUID;"`
+	Provider      string    `gorm:"type:varchar(100);not null;column:provider;comment:供应商ID;uniqueIndex:provider_model" aovalue:"provider"`
+	ProviderName  string    `gorm:"type:varchar(100);not null;column:provider_name;comment:供应商名称"`
+	Model         string    `gorm:"type:varchar(100);not null;column:model;comment:模型ID;uniqueIndex:provider_model"`
+	ModelName     string    `gorm:"type:varchar(100);not null;column:model_name;comment:模型名称"`
+	Type          int       `gorm:"type:tinyint(1);not null;column:type;comment:类型,0：online，1：local"`
+	State         int       `gorm:"type:tinyint(1);not null;column:state;comment:状态,0：异常，1：正常;default:1"`
+	Priority      int       `gorm:"type:int;not null;column:priority;comment:优先级，数字越小优先级越大"`
+	LastCheckAt   int64     `gorm:"type:bigint;not null;column:last_check_at;comment:最近一次健康探测时间(unix秒)"`
+	LastSuccessAt int64     `gorm:"type:bigint;not null;column:last_success_at;comment:最近一次探测成功时间(unix秒)"`
+	FailCount     int       `gorm:"type:int;not null;column:fail_count;comment:连续探测失败次数;default:0"`
+	Creator       string    `gorm:"size:36;not null;column:creator;comment:创建人;index:creator" aovalue:"creator"` // 创建人
+	Updater       string    `gorm:"size:36;not null;column:updater;comment:更新人;index:updater" aovalue:"updater"` // 更新人
+	CreateAt      time.Time `gorm:"type:timestamp;NOT NULL;DEFAULT:CURRENT_TIMESTAMP;column:create_at;comment:创建时间"`
+	UpdateAt      time.Time `gorm:"type:timestamp;NOT NULL;DEFAULT:CURRENT_TIMESTAMP;column:update_at;comment:更新时间"`
 }
 
 func (i *Balance) TableName() string {

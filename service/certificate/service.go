@@ -8,7 +8,7 @@ import (
 	"errors"
 	"reflect"
 	"time"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/stores/certificate"
 	"github.com/eolinker/go-common/autowire"
 	"github.com/eolinker/go-common/utils"
@@ -51,9 +51,9 @@ func (s *imlCertificateService) Delete(ctx context.Context, id string) error {
 			return err
 		}
 		return nil
-		
+
 	})
-	
+
 }
 
 func (s *imlCertificateService) Get(ctx context.Context, id string) (*Certificate, *File, error) {
@@ -79,7 +79,7 @@ func (s *imlCertificateService) Get(ctx context.Context, id string) (*Certificat
 			Key:  fe.Key,
 			Cert: fe.Cert,
 		}, nil
-	
+
 }
 
 func (s *imlCertificateService) List(ctx context.Context, clusterId string) ([]*Certificate, error) {
@@ -142,12 +142,12 @@ func (s *imlCertificateService) Save(ctx context.Context, id, clusterId string, 
 		}
 		fe.Id = ce.Id
 		return s.file.Save(ctx, fe)
-		
+
 	})
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &Certificate{
 		ID:         ce.UUID,
 		Name:       ce.Name,
@@ -158,7 +158,7 @@ func (s *imlCertificateService) Save(ctx context.Context, id, clusterId string, 
 		Updater:    ce.Updater,
 		UpdateTime: ce.UpdateTime,
 	}, nil
-	
+
 }
 
 //func parseCert(crt []byte) (*x509.Certificate, error) {
@@ -193,7 +193,7 @@ func ParseCert(privateKey, pemValue string) (*tls.Certificate, error) {
 		//追加证书链证书到返回
 		cert.Certificate = append(cert.Certificate, certDERBlockChain.Bytes)
 	}
-	
+
 	//解码pem格式的私钥------BEGIN RSA PRIVATE KEY-----   -----END RSA PRIVATE KEY-----
 	keyDERBlock, _ := pem.Decode([]byte(privateKey))
 	if keyDERBlock == nil {
@@ -208,7 +208,7 @@ func ParseCert(privateKey, pemValue string) (*tls.Certificate, error) {
 		//pkcs8格式的私钥解析
 		key, errParsePK = x509.ParsePKCS8PrivateKey(keyDERBlock.Bytes)
 	}
-	
+
 	if errParsePK != nil {
 		return nil, errors.New("证书解析失败")
 	} else {

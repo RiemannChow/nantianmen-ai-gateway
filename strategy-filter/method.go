@@ -33,7 +33,8 @@ func (m *methodFilter) Title() string {
 }
 
 func (m *methodFilter) Labels(values ...string) []string {
-	if len(values) > 0 && values[0] != ValuesALL {
+	// 命中 ALL 时展示为 "all method"；空值展示占位符；其余原样返回
+	if len(values) > 0 && values[0] == ValuesALL {
 		return []string{"all method"}
 	}
 	if len(values) == 0 {

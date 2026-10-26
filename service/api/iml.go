@@ -109,6 +109,9 @@ func (i *imlAPIService) ListInfoForService(ctx context.Context, serviceId string
 	apis, err := i.store.List(ctx, map[string]interface{}{
 		"service": serviceId,
 	})
+	if err != nil {
+		return nil, err
+	}
 	aids := utils.SliceToSlice(apis, func(a *api.API) int64 {
 		return a.Id
 	})

@@ -10,10 +10,6 @@ var (
 	_ IClusterStore = (*storeCluster)(nil)
 )
 
-type countByPartition struct {
-	Partition string
-	Count     int
-}
 type IClusterStore interface {
 	store.IBaseStore[Cluster]
 	Count(ctx context.Context) (map[string]int, error)

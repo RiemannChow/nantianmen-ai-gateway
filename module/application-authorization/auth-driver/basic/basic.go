@@ -3,9 +3,9 @@ package basic
 import (
 	"encoding/json"
 	"fmt"
-	
+
 	auth_driver "github.com/RiemannChow/nantianmen-ai-gateway/module/application-authorization/auth-driver"
-	
+
 	application_authorization_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/application-authorization/dto"
 )
 
@@ -40,7 +40,7 @@ func (cfg *Config) Valid() ([]byte, error) {
 }
 
 func (cfg *Config) Detail() []application_authorization_dto.DetailItem {
-	
+
 	return []application_authorization_dto.DetailItem{
 		{Key: "用户名", Value: cfg.UserName},
 		{Key: "密码", Value: cfg.Password},

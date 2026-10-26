@@ -5,6 +5,7 @@ import (
 	_ "github.com/RiemannChow/nantianmen-ai-gateway/frontend"
 	_ "github.com/RiemannChow/nantianmen-ai-gateway/gateway/apinto"
 	_ "github.com/RiemannChow/nantianmen-ai-gateway/login_driver/feishu"
+	_ "github.com/RiemannChow/nantianmen-ai-gateway/login_driver/ldap"
 	_ "github.com/RiemannChow/nantianmen-ai-gateway/plugins/core"
 	_ "github.com/RiemannChow/nantianmen-ai-gateway/plugins/openapi"
 	_ "github.com/RiemannChow/nantianmen-ai-gateway/plugins/permit"

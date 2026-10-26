@@ -15,7 +15,6 @@ import (
 	"github.com/RiemannChow/nantianmen-ai-gateway/gateway"
 	"github.com/eolinker/eosc/log"
 	"github.com/eolinker/go-common/auto"
-	"github.com/eolinker/go-common/store"
 	"github.com/eolinker/go-common/utils"
 	"gorm.io/gorm"
 
@@ -32,6 +31,8 @@ import (
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/monitor"
 
 	monitor_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/monitor/dto"
+
+	metering_store "github.com/RiemannChow/nantianmen-ai-gateway/stores/metering"
 )
 
 var (
@@ -45,6 +46,7 @@ type imlMonitorStatisticModule struct {
 	clusterService               cluster.IClusterService         `autowired:""`
 	monitorService               monitor.IMonitorService         `autowired:""`
 	apiService                   api.IAPIService                 `autowired:""`
+	usageStore                   metering_store.IUsageStore      `autowired:""`
 }
 
 func (i *imlMonitorStatisticModule) genOverviewWhere(ctx context.Context, serviceId string, apiKind []string) ([]monitor.MonWhereItem, error) {
@@ -75,6 +77,12 @@ func (i *imlMonitorStatisticModule) genOverviewWhere(ctx context.Context, servic
 }
 
 func (i *imlMonitorStatisticModule) AIChartOverview(ctx context.Context, serviceId string, start int64, end int64) (*monitor_dto.ChartAIOverview, error) {
+	// Local-first: when the control plane owns usage data in the window, serve
+	// it directly (no external InfluxDB required). Falls back to the Apinto
+	// InfluxDB path otherwise.
+	if n, _ := i.usageStore.CountInWindow(ctx, start, end); n > 0 {
+		return i.aiChartOverviewLocal(ctx, start, end), nil
+	}
 	wheres, err := i.genOverviewWhere(ctx, serviceId, []string{"ai"})
 	if err != nil {
 		return nil, err
@@ -138,9 +146,7 @@ func (i *imlMonitorStatisticModule) AIChartOverview(ctx context.Context, service
 			errChan <- err
 			return
 		}
-		for _, item := range items {
-			sumResponseTimes = append(sumResponseTimes, item)
-		}
+		sumResponseTimes = append(sumResponseTimes, items...)
 	}()
 	totalTokens := make([]int64, 0)
 	go func() {
@@ -1074,6 +1080,9 @@ func (i *imlMonitorStatisticModule) TopSubscriberStatistics(ctx context.Context,
 }
 
 func (i *imlMonitorStatisticModule) TopProviderStatistics(ctx context.Context, limit int, input *monitor_dto.CommonInput) ([]*monitor_dto.ServiceStatisticItem, error) {
+	if n, _ := i.usageStore.CountInWindow(ctx, input.Start, input.End); n > 0 {
+		return i.topProviderLocal(ctx, input.Start, input.End, limit)
+	}
 	clusterId := cluster.DefaultClusterID
 	_, err := i.clusterService.Get(ctx, clusterId)
 	if err != nil {
@@ -1141,6 +1150,9 @@ func (i *imlMonitorStatisticModule) getExecutor(ctx context.Context, clusterId s
 }
 
 func (i *imlMonitorStatisticModule) RequestSummary(ctx context.Context, input *monitor_dto.CommonInput) (*monitor_dto.MonSummaryOutput, error) {
+	if n, _ := i.usageStore.CountInWindow(ctx, input.Start, input.End); n > 0 {
+		return i.requestSummaryLocal(ctx, input.Start, input.End), nil
+	}
 	clusterId := cluster.DefaultClusterID
 	wheres, err := i.genCommonWheres(ctx, clusterId)
 	if err != nil {
@@ -1157,6 +1169,45 @@ func (i *imlMonitorStatisticModule) RequestSummary(ctx context.Context, input *m
 	}
 
 	return monitor_dto.ToMonSummaryOutput(summary), nil
+}
+
+// ---- local usage (control-plane owned) aggregation helpers ----
+
+func (i *imlMonitorStatisticModule) aiChartOverviewLocal(ctx context.Context, start, end int64) *monitor_dto.ChartAIOverview {
+	calls, in, out, _ := i.usageStore.SummaryInWindow(ctx, start, end)
+	c2xx, c4xx, c5xx, _ := i.usageStore.StatusBreakdownInWindow(ctx, start, end)
+	return &monitor_dto.ChartAIOverview{
+		RequestTotal:     calls,
+		Request2xxTotal:  c2xx,
+		Request4xxTotal:  c4xx,
+		Request5xxTotal:  c5xx,
+		TokenTotal:       in + out,
+		InputTokenTotal:  in,
+		OutputTokenTotal: out,
+	}
+}
+
+func (i *imlMonitorStatisticModule) requestSummaryLocal(ctx context.Context, start, end int64) *monitor_dto.MonSummaryOutput {
+	calls, _, _, _ := i.usageStore.SummaryInWindow(ctx, start, end)
+	return &monitor_dto.MonSummaryOutput{Total: calls}
+}
+
+func (i *imlMonitorStatisticModule) topProviderLocal(ctx context.Context, start, end int64, limit int) ([]*monitor_dto.ServiceStatisticItem, error) {
+	stats, err := i.usageStore.ByProviderInWindow(ctx, start, end, limit)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*monitor_dto.ServiceStatisticItem, 0, len(stats))
+	for _, s := range stats {
+		out = append(out, &monitor_dto.ServiceStatisticItem{
+			ServiceStatisticBasicItem: &monitor_dto.ServiceStatisticBasicItem{
+				Id:            s.Provider,
+				Name:          s.Provider,
+				MonCommonData: &monitor_dto.MonCommonData{RequestTotal: s.Calls},
+			},
+		})
+	}
+	return out, nil
 }
 
 func (i *imlMonitorStatisticModule) ProxySummary(ctx context.Context, input *monitor_dto.CommonInput) (*monitor_dto.MonSummaryOutput, error) {
@@ -1185,7 +1236,6 @@ var (
 type imlMonitorConfig struct {
 	clusterService cluster.IClusterService `autowired:""`
 	monitorService monitor.IMonitorService `autowired:""`
-	transaction    store.ITransaction      `autowired:""`
 }
 
 func (m *imlMonitorConfig) dynamicClient(ctx context.Context, clusterId string, resource string, f func(gateway.IDynamicClient) error) error {

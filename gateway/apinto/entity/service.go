@@ -3,7 +3,7 @@ package entity
 import (
 	"fmt"
 	"strings"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/gateway"
 )
 

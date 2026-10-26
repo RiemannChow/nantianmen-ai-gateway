@@ -3,7 +3,7 @@ package plugin_cluster
 import (
 	"context"
 	"reflect"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/model/plugin_model"
 	"github.com/eolinker/go-common/autowire"
 )
@@ -22,5 +22,5 @@ func init() {
 	autowire.Auto[IPluginService](func() reflect.Value {
 		return reflect.ValueOf(new(imlPluginService))
 	})
-	
+
 }

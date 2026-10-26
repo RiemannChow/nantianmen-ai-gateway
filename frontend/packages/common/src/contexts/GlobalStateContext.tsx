@@ -11,6 +11,8 @@ import { ProtectedRoute } from '@core/components/aoplatform/RenderRoutes'
 import Login from '@core/pages/Login'
 import Root from '@core/pages/Root'
 import Playground from '@core/pages/playground'
+import License from '@core/pages/license/License'
+import Sla from '@core/pages/license/Sla'
 import DataMaskingCompare from '@core/pages/policy/dataMasking/DataMaskingCompare'
 import { App } from 'antd'
 import { createContext, Dispatch, FC, ReactNode, useContext, useEffect, useReducer, useState } from 'react'
@@ -188,6 +190,20 @@ const mockData = [
             path: '/loadBalancing',
             icon: 'ph:network-x',
             access: 'system.settings.ai_balance.view'
+          },
+          {
+            name: '提示词管理',
+            key: 'promptManagement',
+            path: '/prompt',
+            icon: 'mdi:file-document-edit-outline',
+            access: 'system.settings.ai_prompt.view'
+          },
+          {
+            name: '语义缓存',
+            key: 'semanticCache',
+            path: '/semanticCache',
+            icon: 'material-symbols:cache',
+            access: 'system.settings.ai_cache.view'
           }
         ]
       },
@@ -267,6 +283,62 @@ const mockData = [
             access: 'system.settings.log_configuration.view'
           }
         ]
+      },
+      {
+        name: '授权',
+        key: 'license',
+        path: '/license',
+        icon: 'ic:baseline-verified-user',
+        access: 'all'
+      },
+      {
+        name: '计费与返佣',
+        key: 'billing',
+        path: '/billing',
+        icon: 'ic:baseline-request-quote',
+        access: 'system.settings.api_gateway.view'
+      },
+      {
+        name: 'SLA 支持',
+        key: 'sla',
+        path: '/sla',
+        icon: 'ic:baseline-support-agent',
+        access: 'all'
+      },
+      {
+        name: '审计日志',
+        key: 'audit',
+        path: '/audit',
+        icon: 'ic:baseline-fact-check',
+        access: 'all'
+      },
+      {
+        name: 'AI 成本优化',
+        key: 'costopt',
+        path: '/costopt',
+        icon: 'ic:baseline-savings',
+        access: 'system.settings.api_gateway.view'
+      },
+      {
+        name: 'AI 安全治理',
+        key: 'aisecurity',
+        path: '/aisecurity',
+        icon: 'ic:baseline-security',
+        access: 'system.settings.api_gateway.view'
+      },
+      {
+        name: '链路追踪',
+        key: 'tracing',
+        path: '/tracing',
+        icon: 'ic:baseline-monitor-heart',
+        access: 'system.settings.api_gateway.view'
+      },
+      {
+        name: '多租户隔离',
+        key: 'multitenant',
+        path: '/multitenant',
+        icon: 'ic:baseline-account-tree',
+        access: 'system.settings.api_gateway.view'
       }
     ]
   }
@@ -378,7 +450,9 @@ export const DefaultRouteConfig = [
       }
     ]
   },
-  { path: '/playground', component: <Playground />, key: 'playground' }
+  { path: '/playground', component: <Playground />, key: 'playground' },
+  { path: '/license', component: <License />, key: 'license' },
+  { path: '/sla', component: <Sla />, key: 'sla' }
 ]
 // Create a context provider component
 export const GlobalProvider: FC<{ children: ReactNode }> = ({ children }) => {

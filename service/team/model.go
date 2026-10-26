@@ -2,7 +2,7 @@ package team
 
 import (
 	"time"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/stores/team"
 )
 

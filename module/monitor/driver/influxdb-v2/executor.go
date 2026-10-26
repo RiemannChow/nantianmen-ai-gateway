@@ -65,9 +65,7 @@ func (e *executor) Init(ctx context.Context) error {
 	})
 	if buckets != nil {
 		for _, bucket := range *buckets {
-			if _, has := toCreateBuckets[bucket.Name]; has {
-				delete(toCreateBuckets, bucket.Name)
-			}
+			delete(toCreateBuckets, bucket.Name)
 		}
 	}
 	expire := domain.RetentionRuleTypeExpire

@@ -11,6 +11,10 @@ type Cluster struct {
 	Name       string
 	Resume     string
 	Cluster    string
+	Role       string
+	Priority   int
+	Enabled    bool
+	Healthy    int
 	Creator    string
 	Updater    string
 	Status     int
@@ -24,6 +28,10 @@ func FromEntity(entity *cluster.Cluster) *Cluster {
 		Name:       entity.Name,
 		Resume:     entity.Resume,
 		Cluster:    entity.Cluster,
+		Role:       entity.Role,
+		Priority:   entity.Priority,
+		Enabled:    entity.Enabled,
+		Healthy:    entity.Healthy,
 		Creator:    entity.Creator,
 		Updater:    entity.Updater,
 		CreateTime: entity.CreateAt,

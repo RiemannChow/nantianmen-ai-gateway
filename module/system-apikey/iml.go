@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/RiemannChow/nantianmen-ai-gateway/module/audit"
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/subscribe"
 
 	application_authorization "github.com/RiemannChow/nantianmen-ai-gateway/service/application-authorization"
@@ -206,7 +207,7 @@ func (i *imlAPIKeyModule) Create(ctx context.Context, input *system_apikey_dto.C
 	if input.Id == "" {
 		input.Id = uuid.NewString()
 	}
-	return i.transaction.Transaction(ctx, func(ctx context.Context) error {
+	err := i.transaction.Transaction(ctx, func(ctx context.Context) error {
 		err := i.apikeyService.Create(ctx, &system_apikey.Create{
 			Id:      input.Id,
 			Name:    input.Name,
@@ -222,10 +223,19 @@ func (i *imlAPIKeyModule) Create(ctx context.Context, input *system_apikey_dto.C
 		}
 		return i.online(ctx, client)
 	})
+	if err == nil {
+		audit.Log(ctx, &audit.AddInput{
+			ResourceType: "system_apikey",
+			ResourceID:   input.Id,
+			Action:       audit.ActionCreate,
+			Detail:       "创建系统密钥(" + input.Name + ")",
+		})
+	}
+	return err
 }
 
 func (i *imlAPIKeyModule) Update(ctx context.Context, id string, input *system_apikey_dto.Update) error {
-	return i.transaction.Transaction(ctx, func(ctx context.Context) error {
+	err := i.transaction.Transaction(ctx, func(ctx context.Context) error {
 		err := i.apikeyService.Save(ctx, id, &system_apikey.Update{
 			Name:    input.Name,
 			Value:   input.Value,
@@ -240,10 +250,23 @@ func (i *imlAPIKeyModule) Update(ctx context.Context, id string, input *system_a
 		}
 		return i.online(ctx, client)
 	})
+	if err == nil {
+		name := id
+		if input.Name != nil {
+			name = *input.Name
+		}
+		audit.Log(ctx, &audit.AddInput{
+			ResourceType: "system_apikey",
+			ResourceID:   id,
+			Action:       audit.ActionUpdate,
+			Detail:       "更新系统密钥(" + name + ")",
+		})
+	}
+	return err
 }
 
 func (i *imlAPIKeyModule) Delete(ctx context.Context, id string) error {
-	return i.transaction.Transaction(ctx, func(ctx context.Context) error {
+	err := i.transaction.Transaction(ctx, func(ctx context.Context) error {
 		err := i.apikeyService.Delete(ctx, id)
 		if err != nil {
 			return err
@@ -254,6 +277,15 @@ func (i *imlAPIKeyModule) Delete(ctx context.Context, id string) error {
 		}
 		return i.online(ctx, client)
 	})
+	if err == nil {
+		audit.Log(ctx, &audit.AddInput{
+			ResourceType: "system_apikey",
+			ResourceID:   id,
+			Action:       audit.ActionDelete,
+			Detail:       "删除系统密钥(" + id + ")",
+		})
+	}
+	return err
 }
 
 func (i *imlAPIKeyModule) Get(ctx context.Context, id string) (*system_apikey_dto.APIKey, error) {

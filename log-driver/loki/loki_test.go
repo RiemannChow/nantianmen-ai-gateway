@@ -1,12 +1,28 @@
 package loki
 
 import (
+	"net"
 	"testing"
 	"time"
 )
 
+// lokiReachable reports whether a Loki instance is available at the given
+// address. The driver's methods perform live HTTP calls, so without a running
+// Loki this test would fail in CI / offline environments.
+func lokiReachable(addr string) bool {
+	conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
+	if err != nil {
+		return false
+	}
+	_ = conn.Close()
+	return true
+}
+
 func TestLoki(t *testing.T) {
-	d, err := NewDriver(`{"url":"http://localhost:3100","header":{"Content-Type":"application/json","X-Scope-OrgID":"tenant1"}}`)
+	if !lokiReachable("localhost:3100") {
+		t.Skip("loki not reachable at localhost:3100, skipping integration test")
+	}
+	d, _, err := NewDriver(`{"url":"http://localhost:3100","header":{"Content-Type":"application/json","X-Scope-OrgID":"tenant1"}}`)
 	if err != nil {
 		t.Fatalf("failed to create driver: %v", err)
 	}

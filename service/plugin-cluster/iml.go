@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/model/plugin_model"
 	"github.com/RiemannChow/nantianmen-ai-gateway/stores/plugin"
 	"github.com/eolinker/go-common/utils"
@@ -27,11 +27,11 @@ func (i *imlPluginService) SaveDefine(ctx context.Context, defines []*plugin_mod
 		if err != nil {
 			return err
 		}
-		
+
 		ovm := utils.SliceToMap(ov, func(v *plugin.Define) string {
 			return v.Name
 		})
-		
+
 		vsInsert := make([]*plugin.Define, 0, len(defines))
 		vsUpdate := make([]*plugin.Define, 0, len(defines))
 		for sort, dv := range defines {
@@ -50,7 +50,7 @@ func (i *imlPluginService) SaveDefine(ctx context.Context, defines []*plugin_mod
 			}
 			if oev, ok := ovm[dv.Name]; ok {
 				ev.Id = oev.Id
-				
+
 				delete(ovm, dv.Name)
 				vsUpdate = append(vsUpdate, ev)
 			} else {
@@ -70,14 +70,14 @@ func (i *imlPluginService) SaveDefine(ctx context.Context, defines []*plugin_mod
 				return err
 			}
 		}
-		
+
 		for _, v := range vsUpdate {
 			_, err := i.defineStore.Update(ctx, v)
 			if err != nil {
 				return err
 			}
 		}
-		
+
 		return nil
 	})
 }
@@ -90,11 +90,11 @@ func (i *imlPluginService) GetDefine(ctx context.Context, name string) (*PluginD
 		return nil, err
 	}
 	return FromEntity(define), nil
-	
+
 }
 
 func (i *imlPluginService) GetConfig(ctx context.Context, clusterId string, name string) (*Config, *PluginDefine, error) {
-	
+
 	define, err := i.defineStore.First(ctx, map[string]interface{}{
 		"name": name,
 	})
@@ -115,10 +115,10 @@ func (i *imlPluginService) GetConfig(ctx context.Context, clusterId string, name
 			Config:   define.Config,
 			Operator: "",
 		}, FromEntity(define), nil
-		
+
 	}
 	return ConfigFromStore(conf), FromEntity(define), nil
-	
+
 }
 
 func (i *imlPluginService) Defines(ctx context.Context, kind ...plugin_model.Kind) ([]*PluginDefine, error) {
@@ -128,7 +128,7 @@ func (i *imlPluginService) Defines(ctx context.Context, kind ...plugin_model.Kin
 			return nil, err
 		}
 		return utils.SliceToSlice(list, FromEntity), nil
-		
+
 	} else {
 		list, err := i.defineStore.List(ctx, map[string]interface{}{
 			"kind": kind[0],
@@ -158,9 +158,9 @@ func (i *imlPluginService) Options(ctx context.Context) []*PluginOption {
 
 func (i *imlPluginService) SetCluster(ctx context.Context, clusterId string, name string, status plugin_model.Status, config plugin_model.ConfigType) error {
 	operator := utils.UserId(ctx)
-	
+
 	return i.defineStore.Transaction(ctx, func(txCtx context.Context) error {
-		
+
 		define, err := i.defineStore.First(ctx, map[string]interface{}{
 			"name": name,
 		})
@@ -203,18 +203,18 @@ func (i *imlPluginService) SetCluster(ctx context.Context, clusterId string, nam
 			}
 			return nil
 		}
-		
+
 	})
-	
+
 }
 
 func (i *imlPluginService) ListCluster(ctx context.Context, clusterId string, kind ...plugin_model.Kind) ([]*ConfigPartition, error) {
-	
+
 	defines, err := i.Defines(ctx, kind...)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	configList, err := i.pluginPartitionStore.List(ctx, map[string]interface{}{
 		"partition": clusterId,
 	})
@@ -224,7 +224,7 @@ func (i *imlPluginService) ListCluster(ctx context.Context, clusterId string, ki
 	configMap := utils.SliceToMap(configList, func(t *plugin.Partition) string {
 		return t.Plugin
 	})
-	
+
 	return utils.SliceToSlice(defines, func(d *PluginDefine) *ConfigPartition {
 		c, has := configMap[d.Name]
 		if has {
@@ -239,16 +239,16 @@ func (i *imlPluginService) ListCluster(ctx context.Context, clusterId string, ki
 				Extend: d.Extend,
 				Cname:  d.Cname,
 				Desc:   d.Name,
-				
+
 				Config: &Config{
 					Plugin: d.Name,
 					Status: d.Status,
 					Config: d.Config,
-					
+
 					Operator: "",
 				},
 			}
 		}
 	}), nil
-	
+
 }

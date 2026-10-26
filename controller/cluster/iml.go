@@ -3,6 +3,7 @@ package cluster
 import (
 	"github.com/RiemannChow/nantianmen-ai-gateway/module/cluster"
 	cluster_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/cluster/dto"
+	"github.com/RiemannChow/nantianmen-ai-gateway/module/license"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,6 +31,51 @@ func (p *imlCluster) ResetCluster(ctx *gin.Context, clusterId string, input *clu
 
 func (p *imlCluster) Check(ctx *gin.Context, input *cluster_dto.CheckCluster) ([]*cluster_dto.Node, error) {
 	return p.module.CheckCluster(ctx, input.Address)
+}
+
+func (p *imlCluster) ListClusters(ctx *gin.Context) ([]*cluster_dto.ClusterView, error) {
+	if err := license.Check(ctx, "multi_cluster"); err != nil {
+		return nil, err
+	}
+	return p.module.ListClusters(ctx)
+}
+
+func (p *imlCluster) CreateCluster(ctx *gin.Context, input *cluster_dto.CreateCluster) (*cluster_dto.ClusterView, error) {
+	if err := license.Check(ctx, "multi_cluster"); err != nil {
+		return nil, err
+	}
+	return p.module.CreateCluster(ctx, input)
+}
+
+func (p *imlCluster) UpdateCluster(ctx *gin.Context, id string, input *cluster_dto.UpdateCluster) (*cluster_dto.ClusterView, error) {
+	if err := license.Check(ctx, "multi_cluster"); err != nil {
+		return nil, err
+	}
+	return p.module.UpdateCluster(ctx, id, input)
+}
+
+func (p *imlCluster) DeleteCluster(ctx *gin.Context, id string) (string, error) {
+	if err := license.Check(ctx, "multi_cluster"); err != nil {
+		return "", err
+	}
+	if err := p.module.DeleteCluster(ctx, id); err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
+func (p *imlCluster) DRView(ctx *gin.Context) (*cluster_dto.DRView, error) {
+	if err := license.Check(ctx, "multi_cluster"); err != nil {
+		return nil, err
+	}
+	return p.module.DRView(ctx)
+}
+
+func (p *imlCluster) Probe(ctx *gin.Context, id string) ([]*cluster_dto.Node, error) {
+	if err := license.Check(ctx, "multi_cluster"); err != nil {
+		return nil, err
+	}
+	return p.module.ProbeCluster(ctx, id)
 }
 
 //

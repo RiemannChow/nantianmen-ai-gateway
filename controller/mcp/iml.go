@@ -273,6 +273,10 @@ func (i *imlMcpController) handleMessage(ctx *gin.Context, server http.Handler) 
 		return
 	}
 	ps, ok := params.(SessionInfo)
+	if !ok {
+		ctx.String(403, "invalid session info")
+		return
+	}
 	cfg := i.settingModule.Get(ctx)
 	req := ctx.Request.WithContext(utils.SetGatewayInvoke(ctx.Request.Context(), cfg.InvokeAddress))
 	req = req.WithContext(utils.SetLabel(req.Context(), "apikey", ps.Apikey))

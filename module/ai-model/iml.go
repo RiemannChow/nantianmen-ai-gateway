@@ -70,7 +70,7 @@ func (i *imlProviderModelModule) UpdateProviderModel(ctx *gin.Context, provider 
 	if modelInfo == nil || modelInfo.Provider != provider {
 		return fmt.Errorf("model not found")
 	}
-	return i.transaction.Transaction(ctx, func(ctx context.Context) error {
+	err = i.transaction.Transaction(ctx, func(ctx context.Context) error {
 		if err = i.providerModelService.Save(ctx, input.Id, &ai_model.Model{
 			AccessConfiguration: &input.AccessConfiguration,
 			ModelParameters:     &input.ModelParameters,
@@ -95,8 +95,7 @@ func (i *imlProviderModelModule) UpdateProviderModel(ctx *gin.Context, provider 
 		p.SetModel(input.Id, iModel)
 		return nil
 	})
-
-	return nil
+	return err
 }
 
 func (i *imlProviderModelModule) DeleteProviderModel(ctx *gin.Context, provider string, id string) error {

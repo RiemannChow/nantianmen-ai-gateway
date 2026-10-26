@@ -27,3 +27,19 @@ func (i *imlBalanceController) Create(ctx *gin.Context, input *ai_balance_dto.Cr
 func (i *imlBalanceController) Delete(ctx *gin.Context, id string) error {
 	return i.module.Delete(ctx, id)
 }
+
+func (i *imlBalanceController) Probe(ctx *gin.Context, id string) error {
+	return i.module.ProbeModel(ctx, id)
+}
+
+func (i *imlBalanceController) BatchProbe(ctx *gin.Context) error {
+	return i.module.BatchProbe(ctx)
+}
+
+func (i *imlBalanceController) GetAutoFailover(ctx *gin.Context) (bool, error) {
+	return i.module.GetAutoFailover(ctx)
+}
+
+func (i *imlBalanceController) SetAutoFailover(ctx *gin.Context, enabled bool) error {
+	return i.module.SetAutoFailover(ctx, enabled)
+}

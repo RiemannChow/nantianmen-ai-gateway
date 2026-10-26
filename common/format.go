@@ -48,7 +48,7 @@ func FormatTime(t int64) string {
 	if t < 1000000000000 {
 		return fmt.Sprintf("%.1fhour", float64(t)/1000000000)
 	}
-	return fmt.Sprintf("%.1D", float64(t)/1000000000000)
+	return fmt.Sprintf("%.1fday", float64(t)/1000000000000)
 }
 
 func FormatByte(b int64) string {

@@ -3,6 +3,7 @@ package system_apikey
 import (
 	"time"
 
+	"github.com/RiemannChow/nantianmen-ai-gateway/common/crypto"
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/universally"
 	"github.com/RiemannChow/nantianmen-ai-gateway/stores/system"
 )
@@ -22,9 +23,6 @@ func (i *imlAPIKeyService) OnComplete() {
 	i.IServiceEdit = universally.NewEdit[Update, system.APIKey](i.store, i.updateHandler, i.labelHandler)
 }
 
-func (i *imlAPIKeyService) idHandler(e *system.APIKey) int64 {
-	return e.Id
-}
 func (i *imlAPIKeyService) labelHandler(e *system.APIKey) []string {
 	return []string{e.Name}
 }
@@ -33,10 +31,16 @@ func (i *imlAPIKeyService) uniquestHandler(t *Create) []map[string]interface{} {
 }
 func (i *imlAPIKeyService) createEntityHandler(t *Create) *system.APIKey {
 	now := time.Now()
+	// Encrypt the secret value at rest; when encryption is disabled this is a
+	// no-op and the plaintext is stored as-is.
+	value := t.Value
+	if enc, err := crypto.Encrypt(t.Value); err == nil {
+		value = enc
+	}
 	return &system.APIKey{
 		UUID:     t.Id,
 		Name:     t.Name,
-		Value:    t.Value,
+		Value:    value,
 		Expired:  t.Expired,
 		CreateAt: now,
 		UpdateAt: now,
@@ -50,7 +54,12 @@ func (i *imlAPIKeyService) updateHandler(e *system.APIKey, t *Update) {
 		isUpdate = true
 	}
 	if t.Value != nil {
-		e.Value = *t.Value
+		// Encrypt the secret value at rest on update.
+		if enc, err := crypto.Encrypt(*t.Value); err == nil {
+			e.Value = enc
+		} else {
+			e.Value = *t.Value
+		}
 		isUpdate = true
 	}
 	if t.Expired != nil {

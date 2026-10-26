@@ -17,6 +17,11 @@ type IBalanceModule interface {
 	List(ctx context.Context, keyword string) ([]*ai_balance_dto.Item, error)
 	Delete(ctx context.Context, id string) error
 	SyncLocalBalances(ctx context.Context, address string) error
+	ProbeModel(ctx context.Context, id string) error
+	BatchProbe(ctx context.Context) error
+	UpdateState(ctx context.Context, id string, state int) error
+	GetAutoFailover(ctx context.Context) (bool, error)
+	SetAutoFailover(ctx context.Context, enabled bool) error
 }
 
 func init() {

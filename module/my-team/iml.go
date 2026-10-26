@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/RiemannChow/nantianmen-ai-gateway/module/audit"
 	"github.com/eolinker/ap-account/service/role"
 
 	"gorm.io/gorm"
@@ -45,6 +46,9 @@ func (m *imlTeamModule) SimpleTeams(ctx context.Context, keyword string) ([]*tea
 		return nil, err
 	}
 	projects, err := m.serviceService.Search(ctx, "", nil)
+	if err != nil {
+		return nil, err
+	}
 	projectCount := make(map[string]int64)
 	appCount := make(map[string]int64)
 	for _, p := range projects {
@@ -82,7 +86,7 @@ func (m *imlTeamModule) UpdateMemberRole(ctx context.Context, id string, input *
 	if err != nil {
 		return err
 	}
-	return m.transaction.Transaction(ctx, func(ctx context.Context) error {
+	err = m.transaction.Transaction(ctx, func(ctx context.Context) error {
 		if len(input.Roles) < 1 {
 			return errors.New("at least one role")
 		}
@@ -113,6 +117,15 @@ func (m *imlTeamModule) UpdateMemberRole(ctx context.Context, id string, input *
 		}
 		return nil
 	})
+	if err == nil {
+		audit.Log(ctx, &audit.AddInput{
+			ResourceType: "member",
+			ResourceID:   id,
+			Action:       audit.ActionUpdate,
+			Detail:       "更新成员角色(" + id + ")",
+		})
+	}
+	return err
 }
 
 func (m *imlTeamModule) GetTeam(ctx context.Context, id string) (*team_dto.Team, error) {
@@ -211,6 +224,9 @@ func (m *imlTeamModule) MySimpleTeams(ctx context.Context, keyword string) ([]*t
 	projects, err := m.serviceService.Search(ctx, "", map[string]interface{}{
 		"team": teamIDs,
 	})
+	if err != nil {
+		return nil, err
+	}
 	projectCount := make(map[string]int64)
 	appCount := make(map[string]int64)
 	for _, p := range projects {
@@ -245,7 +261,7 @@ func (m *imlTeamModule) AddMember(ctx context.Context, id string, uuids ...strin
 	if err != nil {
 		return err
 	}
-	return m.transaction.Transaction(ctx, func(ctx context.Context) error {
+	err = m.transaction.Transaction(ctx, func(ctx context.Context) error {
 		err = m.teamMemberService.AddMemberTo(ctx, id, uuids...)
 		if err != nil {
 			return err
@@ -262,6 +278,15 @@ func (m *imlTeamModule) AddMember(ctx context.Context, id string, uuids ...strin
 		}
 		return nil
 	})
+	if err == nil {
+		audit.Log(ctx, &audit.AddInput{
+			ResourceType: "member",
+			ResourceID:   id,
+			Action:       audit.ActionCreate,
+			Detail:       "添加成员到团队(" + id + ")",
+		})
+	}
+	return err
 
 }
 
@@ -296,13 +321,22 @@ func (m *imlTeamModule) RemoveMember(ctx context.Context, id string, uuids ...st
 		}
 	}
 
-	return m.transaction.Transaction(ctx, func(ctx context.Context) error {
+	err = m.transaction.Transaction(ctx, func(ctx context.Context) error {
 		err = m.roleMemberService.RemoveUserRole(ctx, role.TeamTarget(id), uuids...)
 		if err != nil {
 			return err
 		}
 		return m.teamMemberService.RemoveMemberFrom(ctx, id, uuids...)
 	})
+	if err == nil {
+		audit.Log(ctx, &audit.AddInput{
+			ResourceType: "member",
+			ResourceID:   id,
+			Action:       audit.ActionDelete,
+			Detail:       "从团队移除成员(" + id + ")",
+		})
+	}
+	return err
 
 }
 

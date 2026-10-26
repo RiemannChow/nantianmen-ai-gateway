@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	ai_balance "github.com/RiemannChow/nantianmen-ai-gateway/service/ai-balance"
-
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/setting"
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/api"
@@ -47,7 +45,6 @@ type imlLocalModel struct {
 	localModelPackageService ai_local.ILocalModelPackageService      `autowired:""`
 	localModelStateService   ai_local.ILocalModelInstallStateService `autowired:""`
 	localModelCacheService   ai_local.ILocalModelCacheService        `autowired:""`
-	balanceService           ai_balance.IBalanceService              `autowired:""`
 	clusterService           cluster.IClusterService                 `autowired:""`
 	aiAPIService             ai_api.IAPIService                      `autowired:""`
 	routerService            api.IAPIService                         `autowired:""`

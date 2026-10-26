@@ -30,7 +30,12 @@ export const DataMaskReplaceStrOptions = [
   { value: 'custom', label: '自定义字符串' }
 ]
 
-export const PolicyOptions = [{ label: '数据脱敏', value: 'data-masking' }]
+export const PolicyOptions = [
+  { label: '数据脱敏', value: 'data-masking' },
+  { label: '精细限流', value: 'limiting' },
+  { label: '熔断', value: 'fuse' },
+  { label: '灰度发布', value: 'grey' }
+]
 
 export const StrategyStatusEnum = {
   update: '待更新',

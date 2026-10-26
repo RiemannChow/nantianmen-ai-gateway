@@ -49,3 +49,27 @@ type Node struct {
 	Gateways []string `json:"service_address"`
 	Status   int      `json:"status"`
 }
+
+// ClusterView is the API projection of a managed cluster, including DR attributes.
+type ClusterView struct {
+	Uuid       string         `json:"uuid"`
+	Name       string         `json:"name"`
+	Resume     string         `json:"resume"`
+	Role       string         `json:"role"`
+	Priority   int            `json:"priority"`
+	Enabled    bool           `json:"enabled"`
+	Healthy    int            `json:"healthy"`
+	NodeCount  int            `json:"node_count"`
+	CreateTime auto.TimeLabel `json:"create_time"`
+	UpdateTime auto.TimeLabel `json:"update_time"`
+}
+
+// DRView is the disaster-recovery overview across all clusters.
+type DRView struct {
+	Total    int            `json:"total"`
+	Enabled  int            `json:"enabled"`
+	Healthy  int            `json:"healthy"`
+	Primary  int            `json:"primary"`
+	Backup   int            `json:"backup"`
+	Clusters []*ClusterView `json:"clusters"`
+}

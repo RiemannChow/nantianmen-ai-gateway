@@ -38,3 +38,22 @@ type ResetCluster struct {
 type CheckCluster struct {
 	Address string `json:"address"`
 }
+
+// CreateCluster registers a new Apinto data-plane cluster from its admin address
+// and assigns its disaster-recovery role/priority.
+type CreateCluster struct {
+	Name     string `json:"name"`
+	Resume   string `json:"resume"`
+	Address  string `json:"address"`
+	Role     string `json:"role"`     // primary | backup | standalone
+	Priority int    `json:"priority"` // lower = preferred during failover
+}
+
+// UpdateCluster edits cluster info and/or DR configuration.
+type UpdateCluster struct {
+	Name     *string `json:"name,omitempty"`
+	Resume   *string `json:"resume,omitempty"`
+	Role     *string `json:"role,omitempty"`
+	Priority *int    `json:"priority,omitempty"`
+	Enabled  *bool   `json:"enabled,omitempty"`
+}

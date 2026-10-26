@@ -84,6 +84,50 @@ system:
             dependents:
               - system.settings.ai_balance.view
 
+      - name: ai prompt
+        value: 'ai_prompt'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.ai_prompt.view
+
+      - name: ai cache
+        value: 'ai_cache'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.ai_cache.view
+
+      - name: marketplace
+        value: 'marketplace'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.marketplace.view
+
+      - name: payment
+        value: 'payment'
+        children:
+          - name: view
+            value: 'view'
+            guest_allow: true
+          - name: manager
+            value: 'manager'
+            dependents:
+              - system.settings.payment.view
+
       - name: role
         value: 'role'
         children:

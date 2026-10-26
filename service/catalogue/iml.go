@@ -3,11 +3,11 @@ package catalogue
 import (
 	"context"
 	"time"
-	
+
 	"github.com/eolinker/go-common/auto"
-	
+
 	"github.com/eolinker/go-common/utils"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/universally"
 	"github.com/RiemannChow/nantianmen-ai-gateway/stores/catalogue"
 )

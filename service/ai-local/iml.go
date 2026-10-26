@@ -222,7 +222,7 @@ func (i *imlLocalModelCacheService) GetByTarget(ctx context.Context, typ CacheTy
 	return &LocalModelCache{
 		Model:  item.Model,
 		Target: item.Target,
-		Type:   CacheType(item.Type),
+		Type:   FromCacheType(item.Type),
 	}, nil
 }
 
@@ -235,7 +235,7 @@ func (i *imlLocalModelCacheService) List(ctx context.Context, model string, typ 
 		return &LocalModelCache{
 			Model:  s.Model,
 			Target: s.Target,
-			Type:   CacheType(s.Type),
+			Type:   FromCacheType(s.Type),
 		}
 	}), nil
 }

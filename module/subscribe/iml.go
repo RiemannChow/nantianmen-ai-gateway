@@ -31,11 +31,10 @@ var (
 )
 
 type imlSubscribeModule struct {
-	serviceService        service.IServiceService          `autowired:""`
-	subscribeService      subscribe.ISubscribeService      `autowired:""`
-	subscribeApplyService subscribe.ISubscribeApplyService `autowired:""`
-	clusterService        cluster.IClusterService          `autowired:""`
-	transaction           store.ITransaction               `autowired:""`
+	serviceService   service.IServiceService     `autowired:""`
+	subscribeService subscribe.ISubscribeService `autowired:""`
+	clusterService   cluster.IClusterService     `autowired:""`
+	transaction      store.ITransaction          `autowired:""`
 }
 
 func (i *imlSubscribeModule) ExistSubscriber(ctx context.Context, serviceId string, app string) error {

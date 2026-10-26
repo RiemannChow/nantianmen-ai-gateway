@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"time"
-	
+
 	"github.com/eolinker/go-common/utils"
-	
+
 	"gorm.io/gorm"
-	
+
 	dynamic_module "github.com/RiemannChow/nantianmen-ai-gateway/stores/dynamic-module"
-	
+
 	"github.com/RiemannChow/nantianmen-ai-gateway/service/universally"
 )
 
@@ -30,16 +30,16 @@ func (i *imlDynamicModuleService) ListByPartition(ctx context.Context, partition
 		return nil, err
 	}
 	return utils.SliceToSlice(list, FromEntity), nil
-	
+
 }
 
 func (i *imlDynamicModuleService) OnComplete() {
 	i.IServiceGet = universally.NewGet[DynamicModule, dynamic_module.DynamicModule](i.store, FromEntity)
-	
+
 	i.IServiceDelete = universally.NewDelete[dynamic_module.DynamicModule](i.store)
-	
+
 	i.IServiceCreate = universally.NewCreator[CreateDynamicModule, dynamic_module.DynamicModule](i.store, "dynamic_module", createEntityHandler, uniquestHandler, labelHandler)
-	
+
 	i.IServiceEdit = universally.NewEdit[EditDynamicModule, dynamic_module.DynamicModule](i.store, updateHandler, labelHandler)
 }
 

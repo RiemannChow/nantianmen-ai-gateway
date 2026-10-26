@@ -20,11 +20,12 @@ type ProviderModel struct {
 }
 
 func FromEntity(e *ai.ProviderModel) *ProviderModel {
+	// 两个字段分别解码，各自失败时回退为原始值（兼容历史非 base64 数据）
 	accessConfiguration, err := base64.RawStdEncoding.DecodeString(e.AccessConfiguration)
-	modelParameters, err := base64.RawStdEncoding.DecodeString(e.ModelParameters)
 	if err != nil {
 		accessConfiguration = []byte(e.AccessConfiguration)
 	}
+	modelParameters, err := base64.RawStdEncoding.DecodeString(e.ModelParameters)
 	if err != nil {
 		modelParameters = []byte(e.ModelParameters)
 	}

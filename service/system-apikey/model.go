@@ -3,6 +3,7 @@ package system_apikey
 import (
 	"time"
 
+	"github.com/RiemannChow/nantianmen-ai-gateway/common/crypto"
 	"github.com/RiemannChow/nantianmen-ai-gateway/stores/system"
 )
 
@@ -31,10 +32,17 @@ type Update struct {
 }
 
 func FromEntity(s *system.APIKey) *APIKey {
+	// Transparently decrypt the secret value on read so callers (API response,
+	// data-plane md5) always see plaintext; when encryption is disabled or the
+	// row is legacy plaintext, Decrypt is a no-op.
+	value := s.Value
+	if dec, err := crypto.Decrypt(s.Value); err == nil {
+		value = dec
+	}
 	return &APIKey{
 		Id:       s.UUID,
 		Name:     s.Name,
-		Value:    s.Value,
+		Value:    value,
 		Creator:  s.Creator,
 		Updater:  s.Updater,
 		CreateAt: s.CreateAt,

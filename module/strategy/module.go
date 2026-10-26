@@ -10,6 +10,13 @@ import (
 	"github.com/eolinker/go-common/autowire"
 
 	_ "github.com/RiemannChow/nantianmen-ai-gateway/module/strategy/driver/data-masking"
+	_ "github.com/RiemannChow/nantianmen-ai-gateway/module/strategy/driver/fuse"
+	_ "github.com/RiemannChow/nantianmen-ai-gateway/module/strategy/driver/grey"
+	_ "github.com/RiemannChow/nantianmen-ai-gateway/module/strategy/driver/limiting"
+
+	_ "github.com/RiemannChow/nantianmen-ai-gateway/module/strategy/driver/ai-security/content-moderation"
+	_ "github.com/RiemannChow/nantianmen-ai-gateway/module/strategy/driver/ai-security/pii-mask"
+	_ "github.com/RiemannChow/nantianmen-ai-gateway/module/strategy/driver/ai-security/prompt-injection"
 	strategy_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/strategy/dto"
 )
 

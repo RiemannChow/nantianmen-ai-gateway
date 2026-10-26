@@ -138,7 +138,7 @@ func (d *Driver) LogCount(clusterId string, conditions map[string]string, spendH
 	if err != nil {
 		return nil, err
 	}
-	log.DebugF("send request spend time: %v", time.Now().Sub(sendRequestTime))
+	log.DebugF("send request spend time: %v", time.Since(sendRequestTime))
 	log.Debug("query is ", queries.Get("query"))
 	result := make(map[string]int64)
 	for _, l := range list {
@@ -336,7 +336,7 @@ func (d *Driver) logCount(clusterId string, conditions map[string]string, start 
 }
 
 func send[T any](method string, uri string, headers map[string]string, queries url.Values, body string) ([]*T, error) {
-	if queries != nil && len(queries) > 0 {
+	if len(queries) > 0 {
 		uri = fmt.Sprintf("%s?%s", uri, queries.Encode())
 	}
 	req, err := http.NewRequest(method, uri, strings.NewReader(body))
@@ -352,7 +352,7 @@ func send[T any](method string, uri string, headers map[string]string, queries u
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
-	log.DebugF("do request spend time: %v", time.Now().Sub(doRequestTime))
+	log.DebugF("do request spend time: %v", time.Since(doRequestTime))
 	defer resp.Body.Close()
 	respData, err := io.ReadAll(resp.Body)
 	if err != nil {

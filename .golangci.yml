@@ -1,0 +1,24 @@
+# golangci-lint 配置
+# 说明：首次引入时采用保守 linter 集，保证 CI 可合入；
+# 存量告警清理后将逐步启用 errcheck / revive 等更严格的检查。
+run:
+  timeout: 5m
+  tests: true
+  go: '1.23'
+
+linters:
+  enable:
+    - govet          # go vet 全家桶
+    - staticcheck    # 静态缺陷模式
+    - unused         # 未使用的代码
+    - ineffassign    # 无效赋值
+    - misspell       # 拼写错误
+  disable:
+    # TODO: 清理存量未处理错误后启用 errcheck
+    - errcheck
+
+issues:
+  # 不继承默认排除规则，让扫描结果真实反映代码现状
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0

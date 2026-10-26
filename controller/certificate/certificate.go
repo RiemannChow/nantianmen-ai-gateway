@@ -2,7 +2,7 @@ package certificate
 
 import (
 	"reflect"
-	
+
 	certificate_dto "github.com/RiemannChow/nantianmen-ai-gateway/module/certificate/dto"
 	"github.com/eolinker/go-common/autowire"
 	"github.com/gin-gonic/gin"

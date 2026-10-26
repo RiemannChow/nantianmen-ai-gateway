@@ -11,6 +11,14 @@ import (
 
 	ai_balance "github.com/RiemannChow/nantianmen-ai-gateway/controller/ai-balance"
 
+	prompt_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/prompt"
+
+	cache_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/cache"
+
+	marketplace_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/marketplace"
+
+	payment_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/payment"
+
 	ai_local "github.com/RiemannChow/nantianmen-ai-gateway/controller/ai-local"
 
 	ai_key "github.com/RiemannChow/nantianmen-ai-gateway/controller/ai-key"
@@ -29,7 +37,23 @@ import (
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/controller/cluster"
 
-	"github.com/eolinker/ap-account/controller/role"
+	license_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/license"
+
+	audit_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/audit"
+
+	billing_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/billing"
+
+	costopt_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/costopt"
+
+	aisecurity_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/aisecurity"
+
+	tracing_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/tracing"
+
+	multitenant_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/multitenant"
+
+	metering_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/metering"
+
+	sla_controller "github.com/RiemannChow/nantianmen-ai-gateway/controller/sla"
 
 	"github.com/RiemannChow/nantianmen-ai-gateway/controller/common"
 
@@ -89,23 +113,34 @@ type plugin struct {
 	aiStatisticController       ai.IStatisticController                            `autowired:""`
 	aiKeyController             ai_key.IKeyController                              `autowired:""`
 	aiBalanceController         ai_balance.IBalanceController                      `autowired:""`
+	promptController            prompt_controller.IPromptController                `autowired:""`
+	cacheController             cache_controller.ICacheController                  `autowired:""`
+	marketplaceController       marketplace_controller.IMarketplaceController      `autowired:""`
+	paymentController           payment_controller.IPaymentController              `autowired:""`
 	aiLocalController           ai_local.ILocalModelController                     `autowired:""`
 	apiDocController            router.IAPIDocController                           `autowired:""`
 	subscribeController         subscribe.ISubscribeController                     `autowired:""`
 	strategyController          strategy.IStrategyController                       `autowired:""`
 	appAuthorizationController  application_authorization.IAuthorizationController `autowired:""`
 	releaseController           release.IReleaseController                         `autowired:""`
-	roleController              role.IRoleController                               `autowired:""`
 	subscribeApprovalController subscribe.ISubscribeApprovalController             `autowired:""`
 	dynamicModuleController     dynamic_module.IDynamicModuleController            `autowired:""`
 	pluginClusterController     plugin_cluster.IPluginClusterController            `autowired:""`
 	commonController            common.ICommonController                           `autowired:""`
+	licenseController           license_controller.ILicenseController              `autowired:""`
+	auditController             audit_controller.IAuditController                  `autowired:""`
+	slaController               sla_controller.ISLAController                      `autowired:""`
+	billingController           billing_controller.IBillingController              `autowired:""`
+	costOptController           costopt_controller.ICostOptController              `autowired:""`
+	aiSecurityController        aisecurity_controller.IAIsecurityController        `autowired:""`
+	tracingController           tracing_controller.ITracingController              `autowired:""`
+	multiTenantController       multitenant_controller.IMultiTenantController      `autowired:""`
+	meteringController          metering_controller.IMeteringController            `autowired:""`
 	exportConfigController      system.IExportConfigController                     `autowired:""`
 	importConfigController      system.IImportConfigController                     `autowired:""`
 	aiProviderController        ai.IProviderController                             `autowired:""`
 	aiProviderModelController   ai_model.IProviderModelController                  `autowired:""`
 	settingController           system.ISettingController                          `autowired:""`
-	initController              system.IInitController                             `autowired:""`
 	logController               log.ILogController                                 `autowired:""`
 	mcpController               mcp.IMcpController                                 `autowired:""`
 	systemAPIKeyController      system_apikey.IAPIKeyController                    `autowired:""`
@@ -128,6 +163,15 @@ func (p *plugin) OnComplete() {
 	p.apis = append(p.apis, p.monitorStatisticApis()...)
 	p.apis = append(p.apis, p.PartitionPluginApi()...)
 	p.apis = append(p.apis, p.commonApis()...)
+	p.apis = append(p.apis, p.licenseApis()...)
+	p.apis = append(p.apis, p.auditApis()...)
+	p.apis = append(p.apis, p.slaApi()...)
+	p.apis = append(p.apis, p.billingApis()...)
+	p.apis = append(p.apis, p.costOptApis()...)
+	p.apis = append(p.apis, p.aiSecurityApis()...)
+	p.apis = append(p.apis, p.tracingApis()...)
+	p.apis = append(p.apis, p.multiTenantApis()...)
+	p.apis = append(p.apis, p.meteringApis()...)
 	p.apis = append(p.apis, p.systemApis()...)
 	p.apis = append(p.apis, p.aiAPIs()...)
 	p.apis = append(p.apis, p.aiKeyApis()...)
@@ -135,6 +179,10 @@ func (p *plugin) OnComplete() {
 	p.apis = append(p.apis, p.logApis()...)
 	p.apis = append(p.apis, p.aiLocalApis()...)
 	p.apis = append(p.apis, p.aiBalanceAPIs()...)
+	p.apis = append(p.apis, p.promptAPIs()...)
+	p.apis = append(p.apis, p.cacheAPIs()...)
+	p.apis = append(p.apis, p.marketplaceAPIs()...)
+	p.apis = append(p.apis, p.paymentAPIs()...)
 	p.apis = append(p.apis, p.mcpAPIs()...)
 	p.apis = append(p.apis, p.systemApikeyApis()...)
 }

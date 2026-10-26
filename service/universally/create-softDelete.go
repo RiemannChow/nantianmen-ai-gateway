@@ -41,20 +41,16 @@ func (p *imlServiceCreateSoftDelete[INPUT, E]) Create(ctx context.Context, input
 	uniquest := p.uniquestHandler(input)
 
 	err := p.store.Transaction(ctx, func(ctx context.Context) error {
-		if uniquest != nil {
-			// check
+		// check
+		for _, v := range uniquest {
+			v["is_delete"] = false
 
-			for _, v := range uniquest {
-
-				v["is_delete"] = false
-
-				o, err := p.store.First(ctx, v)
-				if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-					return err
-				}
-				if o != nil {
-					return fmt.Errorf("%s %v already exists", p.name, v)
-				}
+			o, err := p.store.First(ctx, v)
+			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+				return err
+			}
+			if o != nil {
+				return fmt.Errorf("%s %v already exists", p.name, v)
 			}
 		}
 

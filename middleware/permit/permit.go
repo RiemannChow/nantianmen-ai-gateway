@@ -32,7 +32,6 @@ var (
 )
 
 type PermitMiddleware struct {
-	permitService permit.IPermit `autowired:""`
 }
 
 func (p *PermitMiddleware) Sort() int {
